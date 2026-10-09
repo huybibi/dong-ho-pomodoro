@@ -630,13 +630,19 @@ function openSettings() {
 
 /* ------------------------------------------------------------------ menu */
 
+let menuHiddenAt = 0;
+
 function toggleMenu() {
   const w = wins.menu;
   if (!w || w.isDestroyed()) return;
   if (w.isVisible()) {
     w.hide();
+    menuHiddenAt = Date.now();
     return;
   }
+  /* Bấm ra ngoài làm menu mất focus và tự ẩn; cú bấm đó là để ĐÓNG menu, nên
+     đừng mở lại ngay sau khi nó vừa ẩn. */
+  if (Date.now() - menuHiddenAt < 350) return;
   w.setBounds(menuPlacement());
   w.webContents.send('nav', 'main');
   w.show();
@@ -894,7 +900,10 @@ app.whenReady().then(() => {
   mk('menu', 'menu/index.html', { width: 372, height: 580, transparent: true });
   wins.menu.setAlwaysOnTop(true, 'screen-saver');
   wins.menu.on('blur', () => {
-    if (wins.menu && wins.menu.isVisible()) wins.menu.hide();
+    if (wins.menu && wins.menu.isVisible()) {
+      wins.menu.hide();
+      menuHiddenAt = Date.now();
+    }
   });
 
   try {
