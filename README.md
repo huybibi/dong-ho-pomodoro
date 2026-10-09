@@ -6,6 +6,18 @@ Không cần cài đặt gì thêm, không cần tài khoản, không có máy c
 
 ---
 
+## Xem qua
+
+<img src="assets/shots/hero.png" alt="Đồng hồ đếm ngược luôn nổi trên mọi cửa sổ" width="640">
+
+| Biểu tượng nổi trên desktop | Menu khi bấm vào | Bài hít thở |
+| --- | --- | --- |
+| <img src="assets/shots/orb.png" alt="Biểu tượng cà chua" width="150"> | <img src="assets/shots/menu.png" alt="Menu" width="180"> | <img src="assets/shots/breathe.png" alt="Hít thở" width="220"> |
+
+<img src="assets/shots/settings.png" alt="Cài đặt: phòng làm việc, hít thở, âm thanh, giao diện, thống kê" width="720">
+
+---
+
 ## Chạy ứng dụng
 
 ```
@@ -102,7 +114,7 @@ Nếu lỡ kéo cửa sổ ra ngoài màn hình, tab *Giao diện* có nút **đ
 
 ## Dữ liệu
 
-Lưu tại `%APPDATA%\Cà Chua Tập Trung\deepwork.json` (một file JSON duy nhất, mở ra đọc được). Trong đó có lịch sử phiên, lý do bỏ phiên, mục tiêu từng phiên và vị trí các cửa sổ. Nút *Xoá toàn bộ lịch sử* nằm ở tab Thống kê.
+Lưu tại `%APPDATA%\Đồng hồ Pomodoro\deepwork.json` (một file JSON duy nhất, mở ra đọc được). Trong đó có lịch sử phiên, lý do bỏ phiên, mục tiêu từng phiên và vị trí các cửa sổ. Nút *Xoá toàn bộ lịch sử* nằm ở tab Thống kê.
 
 ---
 
@@ -123,7 +135,7 @@ renderer/
   shared/    style, tiện ích, và toàn bộ âm thanh (Web Audio)
 ```
 
-Sinh lại icon: `npm run icons`.
+Sinh lại icon: `npm run icons`. Sinh lại ảnh demo: `set DEEPWORK_SHOTS=1&& electron .` (ảnh ghi vào `assets/shots/`).
 
 ---
 

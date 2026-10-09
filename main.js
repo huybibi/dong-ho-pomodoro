@@ -12,6 +12,7 @@ const ICON = path.join(ASSETS, 'icon.png');
 const TRAY_ICON = path.join(ASSETS, 'tray.png');
 
 const SMOKE = !!process.env.DEEPWORK_SMOKE;
+const SHOTS = !!process.env.DEEPWORK_SHOTS;
 
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 if (process.platform === 'win32') app.setAppUserModelId('com.cauchua.deepwork');
@@ -911,6 +912,81 @@ app.whenReady().then(() => {
       quitting = true;
       app.quit();
     }, 7800);
+  }
+
+  /* Ảnh demo cho README (dev-only): DEEPWORK_SHOTS=1 node_modules\electron\dist\electron.exe .
+     Chụp chính các cửa sổ thật bằng capturePage() — ảnh chụp màn hình kiểu GDI
+     không bắt được cửa sổ trong suốt của Electron. Mỗi ảnh được tự kiểm chứng
+     bằng img.getBitmap(): % pixel đục + RGB trung bình. */
+  if (SHOTS) {
+    const dir = path.join(ASSETS, 'shots');
+    fs.mkdirSync(dir, { recursive: true });
+    const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+    const DESK =
+      'html,body{background:linear-gradient(135deg,#2b3440 0%,#1b212b 45%,#0e1218 100%) !important;}';
+    const paint = (name, css) => {
+      const w = wins[name];
+      if (!w || w.isDestroyed() || !css) return Promise.resolve();
+      const expr = `(() => { const s = document.createElement('style'); s.textContent = ${JSON.stringify(
+        css,
+      )}; document.head.appendChild(s); return true; })()`;
+      return w.webContents.executeJavaScript(expr).catch(() => false);
+    };
+    const shot = async (name, file, css, ms) => {
+      const w = wins[name];
+      if (!w || w.isDestroyed()) return console.log('SHOT skip:', name);
+      await paint(name, css);
+      await wait(ms || 500);
+      const img = await w.webContents.capturePage();
+      const out = path.join(dir, file);
+      fs.writeFileSync(out, img.toPNG());
+      const { width, height } = img.getSize();
+      const bm = img.getBitmap();
+      let opaque = 0;
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      for (let i = 0; i < bm.length; i += 4) {
+        if (bm[i + 3] > 8) {
+          opaque += 1;
+          r += bm[i + 2];
+          g += bm[i + 1];
+          b += bm[i];
+        }
+      }
+      const n = Math.max(1, opaque);
+      console.log(
+        'SHOT',
+        file,
+        JSON.stringify({
+          size: `${width}x${height}`,
+          opaquePct: Math.round((opaque / (width * height)) * 100),
+          mean: [Math.round(r / n), Math.round(g / n), Math.round(b / n)],
+          bytes: fs.statSync(out).size,
+        }),
+      );
+    };
+
+    (async () => {
+      await wait(1600);
+      store.patch({ timerScale: 2 });
+      startFocus(45, 'Viết xong báo cáo Q3');
+      engine.remaining = 18 * 60 + 24;
+      broadcast();
+      await wait(900);
+      await shot('orb', 'orb.png', DESK, 700);
+      await shot('timer', 'hero.png', DESK, 700);
+      toggleMenu();
+      await shot('menu', 'menu.png', DESK, 900);
+      startBreathe('box');
+      await shot('breathe', 'breathe.png', DESK, 2600);
+      openSettings();
+      await wait(1600);
+      await shot('settings', 'settings.png', null, 900);
+      console.log('SHOTS done');
+      quitting = true;
+      app.quit();
+    })();
   }
 });
 
