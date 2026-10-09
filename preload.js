@@ -18,7 +18,7 @@ contextBridge.exposeInMainWorld('tomato', {
   },
   drag: {
     start: () => ipcRenderer.send('drag:start'),
-    move: (x, y) => ipcRenderer.send('drag:move', x, y),
+    move: () => ipcRenderer.send('drag:move'),
     end: () => ipcRenderer.send('drag:end'),
   },
 });

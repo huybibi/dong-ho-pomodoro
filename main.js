@@ -35,7 +35,7 @@ const S = store.settings;
 let tray = null;
 let quitting = false;
 const wins = {};
-const dragging = { win: null, cursor: null, origin: null };
+const dragging = { win: null, origin: null, offX: 0, offY: 0, timer: null };
 const timers = { tips: [] };
 
 /* ------------------------------------------------------------------ windows */
@@ -787,28 +787,51 @@ ipcMain.on('win:clickThrough', (e, flag) => {
   if (w.isVisible()) w.setIgnoreMouseEvents(!!flag, { forward: true });
 });
 
+/* Kéo cửa sổ: bám con trỏ bằng vòng lặp ở tiến trình chính.
+   Chỉ dựa vào mousemove của renderer thì khi kéo thật nhanh, cửa sổ tụt lại phía sau
+   con trỏ, renderer không nhận thêm sự kiện chuột nào nữa và cửa sổ đứng yên giữa đường. */
+function followCursor() {
+  const w = dragging.win;
+  if (!w || w.isDestroyed()) return stopDrag();
+  const p = screen.getCursorScreenPoint();
+  const b = w.getBounds();
+  const x = Math.round(p.x - dragging.offX);
+  const y = Math.round(p.y - dragging.offY);
+  if (x !== b.x || y !== b.y) w.setPosition(x, y, false);
+  return undefined;
+}
+
+function stopDrag() {
+  if (dragging.timer) clearInterval(dragging.timer);
+  dragging.timer = null;
+  const w = dragging.win;
+  dragging.win = null;
+  dragging.origin = null;
+  return w && !w.isDestroyed() ? w : null;
+}
+
 ipcMain.on('drag:start', (e) => {
   const w = BrowserWindow.fromWebContents(e.sender);
   if (!w || w.isDestroyed()) return;
+  stopDrag();
+  const p = screen.getCursorScreenPoint();
+  const b = w.getBounds();
   dragging.win = w;
-  dragging.cursor = screen.getCursorScreenPoint();
-  dragging.origin = w.getBounds();
+  dragging.origin = b;
+  dragging.offX = Math.round(p.x - b.x);
+  dragging.offY = Math.round(p.y - b.y);
+  w.setIgnoreMouseEvents(false); /* trong lúc kéo cửa sổ phải nhận chuột liên tục */
+  dragging.timer = setInterval(followCursor, 12);
 });
 
-ipcMain.on('drag:move', (e, x, y) => {
-  const w = dragging.win;
-  if (!w || w.isDestroyed() || !dragging.origin || !dragging.cursor) return;
-  const dx = x - dragging.cursor.x;
-  const dy = y - dragging.cursor.y;
-  w.setBounds({ x: Math.round(dragging.origin.x + dx), y: Math.round(dragging.origin.y + dy), width: dragging.origin.width, height: dragging.origin.height });
+ipcMain.on('drag:move', () => {
+  followCursor();
 });
 
 ipcMain.on('drag:end', () => {
-  const w = dragging.win;
-  dragging.win = null;
-  dragging.cursor = null;
-  dragging.origin = null;
-  if (!w || w.isDestroyed()) return;
+  const w = stopDrag();
+  if (!w) return;
+  if (w.__clickThrough !== undefined) w.setIgnoreMouseEvents(!!w.__clickThrough, { forward: true });
   const b = w.getBounds();
   const area = workArea(w);
   const snap = 30;

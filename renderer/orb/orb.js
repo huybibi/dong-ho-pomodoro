@@ -47,6 +47,7 @@ U.q('#stage').addEventListener('dblclick', () => {
 /* Cửa sổ cà chua rộng 150px nhưng quả chỉ chiếm giữa: phần trong suốt để chuột xuyên qua,
    chỉ khi trỏ đúng vào quả cà chua thì cửa sổ mới nhận chuột. */
 let clickThrough = null;
+let dragging = false;
 
 function setClickThrough(flag) {
   if (flag === clickThrough) return;
@@ -54,12 +55,35 @@ function setClickThrough(flag) {
   window.tomato.win.setClickThrough(flag);
 }
 
+/* Lúc kéo phải giữ cho cửa sổ nhận chuột liên tục: nếu bật xuyên chuột giữa chừng
+   (con trỏ lệch khỏi quả trong lúc cửa sổ chạy chậm hơn) thì mousemove ngừng tới
+   và quả cà chua đứng yên giữa đường. */
+window.addEventListener(
+  'mousedown',
+  () => {
+    dragging = true;
+    setClickThrough(false);
+  },
+  true
+);
+
+window.addEventListener('mouseup', () => {
+  dragging = false;
+});
+
+window.addEventListener('blur', () => {
+  dragging = false;
+});
+
 window.addEventListener('mousemove', (e) => {
+  if (dragging) return;
   const hit = document.elementFromPoint(e.clientX, e.clientY);
   setClickThrough(!(hit && hit.closest && hit.closest('#fruit')));
 });
 
-document.addEventListener('mouseleave', () => setClickThrough(true));
+document.addEventListener('mouseleave', () => {
+  if (!dragging) setClickThrough(true);
+});
 
 setClickThrough(true);
 

@@ -55,7 +55,7 @@ window.U = {
     window.addEventListener('mousemove', (e) => {
       if (!active) return;
       if (Math.abs(e.screenX - sx) + Math.abs(e.screenY - sy) > (opts.threshold || 4)) moved = true;
-      if (moved) window.tomato.drag.move(e.screenX, e.screenY);
+      if (moved) window.tomato.drag.move();
     });
 
     window.addEventListener('mouseup', (e) => {
@@ -63,6 +63,14 @@ window.U = {
       active = false;
       window.tomato.drag.end();
       if (!moved && Date.now() - t0 < 700 && onTap) onTap(e);
+    });
+
+    /* Mất focus giữa chừng (bấm chỗ khác, alt-tab) thì kết thúc kéo, tránh cửa sổ
+       còn bám theo con trỏ mãi. */
+    window.addEventListener('blur', () => {
+      if (!active) return;
+      active = false;
+      window.tomato.drag.end();
     });
   },
 };
