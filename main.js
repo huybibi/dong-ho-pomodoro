@@ -14,6 +14,18 @@ const TRAY_ICON = path.join(ASSETS, 'tray.png');
 const SMOKE = !!process.env.DEEPWORK_SMOKE;
 const SHOTS = !!process.env.DEEPWORK_SHOTS;
 
+/* Nếu terminal chạy app đóng trước khi app thoát, console.log() ném
+   `EPIPE: broken pipe, write` thành uncaughtException → Electron bật hộp thoại
+   "A JavaScript error occurred in the main process". Log không quan trọng bằng
+   việc app sống, nên bỏ qua riêng EPIPE (mọi lỗi khác vẫn ném như cũ). */
+for (const stream of [process.stdout, process.stderr]) {
+  if (stream && typeof stream.on === 'function') {
+    stream.on('error', (err) => {
+      if (!err || err.code !== 'EPIPE') throw err;
+    });
+  }
+}
+
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 if (process.platform === 'win32') app.setAppUserModelId('com.cauchua.deepwork');
 
