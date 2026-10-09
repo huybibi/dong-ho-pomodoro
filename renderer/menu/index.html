@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="menu.css" />
+  </head>
+  <body>
+    <div id="card" class="card">
+      <div id="head">
+        <svg id="mini" viewBox="0 0 100 100">
+          <defs>
+            <radialGradient id="mskin" cx="36%" cy="32%" r="80%">
+              <stop offset="0%" stop-color="#ff9380" />
+              <stop offset="45%" stop-color="#f0503a" />
+              <stop offset="100%" stop-color="#b81d18" />
+            </radialGradient>
+          </defs>
+          <ellipse cx="50" cy="60" rx="33" ry="29" fill="url(#mskin)" />
+          <ellipse cx="34" cy="64" rx="14.5" ry="23" fill="url(#mskin)" />
+          <ellipse cx="66" cy="64" rx="14.5" ry="23" fill="url(#mskin)" />
+          <path d="M50 29 C45 21 42 13 45 6 C50 12 53 21 51 29 Z" fill="#3f9d4a" />
+          <path d="M50 29 C45 21 42 13 45 6 C50 12 53 21 51 29 Z" fill="#3f9d4a" transform="rotate(-55 50 30)" />
+          <path d="M50 29 C45 21 42 13 45 6 C50 12 53 21 51 29 Z" fill="#3f9d4a" transform="rotate(55 50 30)" />
+        </svg>
+        <div id="who">
+          <div id="title">Cà Chua Tập Trung</div>
+          <div id="sub">sẵn sàng cho một phiên sâu</div>
+        </div>
+        <button class="btn ghost" id="close" title="Đóng (Esc)">✕</button>
+      </div>
+
+      <!-- TRANG CHÍNH -->
+      <div class="view on" id="v-main">
+        <div class="today">
+          <div class="t-row">
+            <span id="today-count">0/8 phiên hôm nay</span>
+            <span id="streak" class="streak">0 ngày</span>
+          </div>
+          <div class="bar"><div id="today-fill"></div></div>
+          <div class="t-sub" id="today-sub"></div>
+        </div>
+
+        <input type="text" id="intent" placeholder="Phiên này tôi tập trung vào…" maxlength="90" />
+
+        <div class="chips" id="presets"></div>
+
+        <button class="btn primary big" id="start">Bắt đầu tập trung 25′</button>
+
+        <div class="row2">
+          <button class="btn" id="to-breathe">🫁 Hít thở tập trung</button>
+          <button class="btn" id="short-break">☕ Nghỉ 5′</button>
+        </div>
+
+        <div class="toggles">
+          <button class="tg" data-tg="ambient"><b>Âm thanh nền</b><span id="amb-label">đang tắt</span></button>
+          <button class="tg" data-tg="guide"><b>Tiếng dẫn nhịp thở</b><span>âm cao lên khi hít vào</span></button>
+        </div>
+
+        <div class="foot">
+          <button class="btn ghost" id="open-settings">Thống kê &amp; cài đặt</button>
+          <button class="btn ghost" id="hide-orb">Ẩn cà chua</button>
+        </div>
+      </div>
+
+      <!-- HÍT THỞ -->
+      <div class="view" id="v-breathe">
+        <div class="vhead">
+          <button class="btn ghost" data-back>‹ Quay lại</button>
+          <span class="vtitle">Chọn bài hít thở</span>
+        </div>
+        <div id="patterns"></div>
+        <div class="note">Thở xong mới làm việc — não cần 60–90 giây để chuyển sang trạng thái tập trung.</div>
+      </div>
+
+      <!-- ÂM THANH -->
+      <div class="view" id="v-ambient">
+        <div class="vhead">
+          <button class="btn ghost" data-back>‹ Quay lại</button>
+          <span class="vtitle">Âm thanh nền</span>
+        </div>
+        <div class="chips wrap" id="ambients"></div>
+        <label class="slider">
+          <span>Âm lượng nền</span>
+          <input type="range" id="amb-vol" min="0" max="1" step="0.02" />
+        </label>
+        <label class="slider" id="beat-wrap">
+          <span>Nhịp binaural: <b id="beat-val">10 Hz</b></span>
+          <input type="range" id="beat" min="2" max="20" step="0.5" />
+        </label>
+        <div class="note">Tiếng nâu che lấp tiếng ồn văn phòng. Binaural 10 Hz ở dải alpha giúp giữ tập trung — nên dùng tai nghe.</div>
+      </div>
+    </div>
+    <script src="../shared/util.js"></script>
+    <script src="menu.js"></script>
+  </body>
+</html>

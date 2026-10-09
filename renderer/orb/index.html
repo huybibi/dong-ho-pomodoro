@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="orb.css" />
+  </head>
+  <body>
+    <div id="stage">
+      <svg id="ring" viewBox="0 0 120 120">
+        <circle class="track" cx="60" cy="60" r="52" />
+        <circle class="prog" cx="60" cy="60" r="52" />
+      </svg>
+
+      <svg id="tomato" viewBox="0 0 100 100">
+        <defs>
+          <radialGradient id="skin" cx="36%" cy="32%" r="80%">
+            <stop offset="0%" stop-color="#ff9380" />
+            <stop offset="42%" stop-color="#f0503a" />
+            <stop offset="100%" stop-color="#b81d18" />
+          </radialGradient>
+          <linearGradient id="leafg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#63c672" />
+            <stop offset="100%" stop-color="#28753a" />
+          </linearGradient>
+          <filter id="blur6"><feGaussianBlur stdDeviation="3" /></filter>
+          <filter id="blur2"><feGaussianBlur stdDeviation="1.6" /></filter>
+          <path id="leafp" d="M50 29 C 45 21 42.5 13 45 5.5 C 50 12 53.5 21 51.5 29 Z" />
+          <g id="calyx">
+            <use href="#leafp" transform="rotate(-62 50 30)" />
+            <use href="#leafp" transform="rotate(-32 50 30)" />
+            <use href="#leafp" />
+            <use href="#leafp" transform="rotate(32 50 30)" />
+            <use href="#leafp" transform="rotate(62 50 30)" />
+          </g>
+        </defs>
+
+        <g id="fruit">
+          <g id="body">
+            <path
+              d="M50 30.5 C 62 30.5 72.5 34 78 41.5 C 83.5 49 84.5 60 79.5 69.5 C 74 80 63 86.5 50 86.5 C 37 86.5 26 80 20.5 69.5 C 15.5 60 16.5 49 22 41.5 C 27.5 34 38 30.5 50 30.5 Z"
+              fill="url(#skin)" />
+            <ellipse cx="50" cy="73" rx="22" ry="9.5" fill="#8f1412" opacity="0.3" filter="url(#blur6)" />
+          </g>
+          <ellipse cx="38" cy="45" rx="11" ry="7" fill="#fff" opacity="0.3" filter="url(#blur6)" />
+          <ellipse cx="35.5" cy="43" rx="4.6" ry="3.1" fill="#fff" opacity="0.72" filter="url(#blur2)" />
+
+          <use href="#calyx" fill="url(#leafg)" />
+          <path d="M50 29 L 50 17" stroke="#2b7a3c" stroke-width="3.2" stroke-linecap="round" />
+        </g>
+      </svg>
+
+      <div id="time" class="mono">25:00</div>
+      <div id="streak">0</div>
+      <div id="pulse"></div>
+    </div>
+    <script src="../shared/util.js"></script>
+    <script src="orb.js"></script>
+  </body>
+</html>

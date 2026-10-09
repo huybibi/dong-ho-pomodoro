@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="breathe.css" />
+  </head>
+  <body>
+    <div id="card" class="card">
+      <div id="head">
+        <div id="titles">
+          <div id="name">Thở hộp</div>
+          <div id="tag">4 · 4 · 4 · 4</div>
+        </div>
+        <button class="btn ghost" id="close" title="Đóng">✕</button>
+      </div>
+
+      <div id="stage">
+        <svg id="ring" viewBox="0 0 240 240">
+          <circle class="track" cx="120" cy="120" r="112" />
+          <circle class="prog" cx="120" cy="120" r="112" />
+        </svg>
+        <div id="orb"></div>
+        <div id="core">
+          <div id="phase">Hít vào</div>
+          <div id="count" class="mono">4</div>
+        </div>
+      </div>
+
+      <div id="desc"></div>
+
+      <div id="meta">
+        <span id="step" class="mono">Bước 1/24</span>
+        <span class="spacer"></span>
+        <span id="left" class="mono">01:36</span>
+      </div>
+
+      <div id="actions">
+        <button class="btn" id="skip">Bỏ qua bước</button>
+        <button class="btn" id="loop">Lặp lại</button>
+        <button class="btn primary" id="done">Xong</button>
+      </div>
+
+      <div id="finish">
+        <div class="fin-icon">🍅</div>
+        <div class="fin-title">Cơ thể đã sẵn sàng</div>
+        <div class="fin-sub">Đừng để sự tập trung nguội đi. Vào phiên luôn chứ?</div>
+        <div class="fin-actions">
+          <button class="btn primary" id="go-focus">Bắt đầu tập trung</button>
+          <button class="btn" id="again">Làm lại bài này</button>
+        </div>
+      </div>
+    </div>
+    <script src="../shared/util.js"></script>
+    <script src="breathe.js"></script>
+  </body>
+</html>

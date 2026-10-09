@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'" />
+    <title>Cà Chua Tập Trung — Cài đặt</title>
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="settings.css" />
+  </head>
+  <body>
+    <div id="top">
+      <span class="logo">🍅</span>
+      <span class="ttl">Cà Chua Tập Trung</span>
+      <span class="spacer"></span>
+      <button class="wbtn" id="min">–</button>
+      <button class="wbtn close" id="close">✕</button>
+    </div>
+
+    <div id="body">
+      <nav id="tabs">
+        <button class="tab on" data-pane="work">Phòng làm việc</button>
+        <button class="tab" data-pane="breath">Hít thở</button>
+        <button class="tab" data-pane="sound">Âm thanh</button>
+        <button class="tab" data-pane="look">Giao diện</button>
+        <button class="tab" data-pane="stats">Thống kê</button>
+        <button class="tab" data-pane="help">Phím tắt &amp; mẹo</button>
+      </nav>
+
+      <main id="panes">
+        <section class="pane on" data-pane="work">
+          <h1>Phòng làm việc</h1>
+          <p class="lead">Nhịp pomodoro của bạn. Đổi ở đây là áp dụng ngay cho phiên kế tiếp.</p>
+
+          <label class="ctl">
+            <span>Thời lượng phiên tập trung <output data-for="focusMin">25</output> phút</span>
+            <input type="range" data-key="focusMin" min="5" max="120" step="5" />
+          </label>
+          <label class="ctl">
+            <span>Nghỉ ngắn <output data-for="shortBreakMin">5</output> phút</span>
+            <input type="range" data-key="shortBreakMin" min="1" max="30" step="1" />
+          </label>
+          <label class="ctl">
+            <span>Nghỉ dài <output data-for="longBreakMin">15</output> phút</span>
+            <input type="range" data-key="longBreakMin" min="5" max="60" step="5" />
+          </label>
+          <label class="ctl">
+            <span>Cứ <output data-for="longEvery">4</output> phiên thì nghỉ dài</span>
+            <input type="range" data-key="longEvery" min="2" max="8" step="1" />
+          </label>
+          <label class="ctl">
+            <span>Mục tiêu mỗi ngày: <output data-for="dailyGoal">8</output> phiên</span>
+            <input type="range" data-key="dailyGoal" min="1" max="20" step="1" />
+          </label>
+          <label class="ctl">
+            <span>Các nút thời lượng nhanh (phút, cách nhau bởi dấu phẩy)</span>
+            <input type="text" data-presets placeholder="15,25,50,90" />
+          </label>
+
+          <div class="switches">
+            <label class="sw"><input type="checkbox" data-key="autoChain" /><span class="box"></span>
+              <span class="tx"><b>Tự chuyển sang giờ nghỉ</b><i>Hết phiên là cà chua tự đếm ngược giờ nghỉ, không cần bấm gì.</i></span>
+            </label>
+            <label class="sw"><input type="checkbox" data-key="autoStartFocus" /><span class="box"></span>
+              <span class="tx"><b>Tự vào phiên sau khi nghỉ</b><i>Chỉ nên bật khi bạn đã quen nhịp. Nghỉ xong là vào việc luôn.</i></span>
+            </label>
+          </div>
+        </section>
+
+        <section class="pane" data-pane="breath">
+          <h1>Hít thở tập trung</h1>
+          <p class="lead">Một phút thở đúng nhịp đổi được cả phiên làm việc.</p>
+
+          <div class="switches">
+            <label class="sw"><input type="checkbox" data-key="guideAudio" /><span class="box"></span>
+              <span class="tx"><b>Tiếng dẫn nhịp thở</b><i>Âm cao dần khi hít vào, trầm dần khi thở ra — nhắm mắt vẫn theo được.</i></span>
+            </label>
+            <label class="sw"><input type="checkbox" data-key="eyeRest" /><span class="box"></span>
+              <span class="tx"><b>Nhắc quy tắc 20-20-20</b><i>Vào giờ nghỉ, nhắc nhìn ra xa 6 mét trong 20 giây để mắt hồi phục.</i></span>
+            </label>
+          </div>
+
+          <label class="ctl">
+            <span>Nhắc uống nước sau mỗi <output data-for="waterEveryMin">25</output> phút (trong giờ nghỉ dài)</span>
+            <input type="range" data-key="waterEveryMin" min="5" max="60" step="5" />
+          </label>
+
+          <h2>Các bài đang có</h2>
+          <div id="pattern-list" class="list"></div>
+        </section>
+
+        <section class="pane" data-pane="sound">
+          <h1>Âm thanh</h1>
+          <p class="lead">Toàn bộ âm thanh được sinh trực tiếp, không cần file nhạc nào.</p>
+
+          <div class="switches">
+            <label class="sw"><input type="checkbox" data-key="sound" /><span class="box"></span>
+              <span class="tx"><b>Chuông báo</b><i>Kêu khi hết phiên, hết giờ nghỉ, và khi bắt đầu.</i></span>
+            </label>
+          </div>
+
+          <label class="ctl">
+            <span>Âm lượng chuông</span>
+            <input type="range" data-key="volume" min="0" max="1" step="0.05" />
+          </label>
+          <button class="btn" data-action="sound:test">Nghe thử chuông</button>
+
+          <h2>Âm thanh nền</h2>
+          <div class="chips" id="amb-chips"></div>
+
+          <label class="ctl">
+            <span>Âm lượng nền <output data-for="ambientVolume">0.4</output></span>
+            <input type="range" data-key="ambientVolume" min="0" max="1" step="0.02" />
+          </label>
+          <label class="ctl">
+            <span>Nhịp binaural: <output data-for="binauralBeat">10</output> Hz</span>
+            <input type="range" data-key="binauralBeat" min="2" max="20" step="0.5" />
+          </label>
+          <p class="hint">Binaural cần tai nghe mới có tác dụng. 10 Hz (dải alpha) hợp với đọc và viết; 14–18 Hz hợp với việc cần tỉnh táo.</p>
+        </section>
+
+        <section class="pane" data-pane="look">
+          <h1>Giao diện</h1>
+          <p class="lead">Cà chua luôn nổi trên mọi cửa sổ. Kéo thả để đặt chỗ nó ở đâu cũng được.</p>
+
+          <div class="switches">
+            <label class="sw"><input type="checkbox" data-key="notify" /><span class="box"></span>
+              <span class="tx"><b>Thông báo hệ thống</b><i>Hiện thông báo Windows khi hết phiên hoặc tới lúc nghỉ mắt.</i></span>
+            </label>
+            <label class="sw"><input type="checkbox" data-key="hideOrb" /><span class="box"></span>
+              <span class="tx"><b>Ẩn quả cà chua</b><i>Chỉ còn cửa sổ đếm ngược. Hiện lại bằng Ctrl+Alt+H hoặc từ khay hệ thống.</i></span>
+            </label>
+          </div>
+
+          <h2>Đồng hồ đếm ngược</h2>
+          <label class="ctl">
+            <span>Cỡ con số đếm lùi <output data-for="timerScale">1</output>×</span>
+            <input type="range" data-key="timerScale" min="0.7" max="2" step="0.05" />
+          </label>
+          <p class="hint">Bảng đếm ngược giờ chỉ có con số. Bấm vào con số để tạm dừng, kéo để đổi chỗ; nút ✕ hiện ra khi rê chuột vào để kết thúc phiên.</p>
+
+          <h2>Điều khiển phiên</h2>
+          <div class="btns">
+            <button class="btn" data-action="session:pause">Tạm dừng / tiếp tục</button>
+            <button class="btn" data-action="session:extend">Thêm 5 phút</button>
+            <button class="btn" data-action="session:skip">Bỏ qua bước này</button>
+          </div>
+          <p class="hint">Ba nút này là những nút từng nằm trong bảng đếm ngược, chuyển về đây cho gọn.</p>
+
+          <h2>Cửa sổ</h2>
+          <button class="btn" data-action="pos:reset">Đưa cà chua &amp; đồng hồ về vị trí mặc định</button>
+          <p class="hint">Nếu lỡ kéo cửa sổ ra khỏi màn hình, nút này sẽ gọi chúng về.</p>
+        </section>
+
+        <section class="pane" data-pane="stats">
+          <h1>Thống kê</h1>
+          <div id="stat-cards" class="cards"></div>
+          <h2>Bảy ngày gần nhất</h2>
+          <div id="week" class="week"></div>
+          <div id="insight" class="insight"></div>
+          <div id="intents" class="list"></div>
+          <h2>Dữ liệu</h2>
+          <p class="hint" id="data-path"></p>
+          <button class="btn danger" data-action="stats:reset">Xoá toàn bộ lịch sử</button>
+        </section>
+
+        <section class="pane" data-pane="help">
+          <h1>Phím tắt &amp; mẹo</h1>
+          <div class="keys">
+            <div><kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>P</kbd><span>Tắt/mở phiên tập trung 25 phút</span></div>
+            <div><kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>B</kbd><span>Vào bài hít thở gần nhất</span></div>
+            <div><kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>X</kbd><span>Kết thúc phiên đang chạy</span></div>
+            <div><kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>M</kbd><span>Mở menu cà chua</span></div>
+            <div><kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>H</kbd><span>Ẩn/hiện quả cà chua</span></div>
+          </div>
+          <h2>Mẹo dùng</h2>
+          <ul class="tips">
+            <li><b>Bấm</b> đúng quả cà chua để mở menu · <b>nháy đúp</b> để vào phiên ngay. Vùng trong suốt quanh quả thì chuột xuyên qua, không vướng gì.</li>
+            <li>Ghi <b>mục tiêu của phiên</b> — một câu thôi. Khi bị phân tâm, nhìn lại câu đó là cách quay về nhanh nhất.</li>
+            <li>Đừng bỏ qua phần <b>hít thở</b>: 60–90 giây thở đúng nhịp giúp vào trạng thái tập trung nhanh hơn hẳn.</li>
+            <li>Khi phải dừng sớm, cứ chọn lý do. Vài ngày sau mục <b>Thống kê</b> sẽ chỉ ra thứ đang cắt ngang bạn nhiều nhất.</li>
+            <li>Cà chua <b>luôn nổi trên mọi cửa sổ</b> — mở DSH, trình duyệt hay bất cứ gì, con số vẫn ở đó.</li>
+          </ul>
+        </section>
+      </main>
+    </div>
+
+    <script src="../shared/util.js"></script>
+    <script src="settings.js"></script>
+  </body>
+</html>

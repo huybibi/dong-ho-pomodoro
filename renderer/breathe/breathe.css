@@ -1,0 +1,200 @@
+html,
+body {
+  background: transparent;
+  overflow: hidden;
+}
+
+#card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 18px 22px 20px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+#titles {
+  flex: 1;
+}
+
+#name {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+#tag {
+  font-size: 12px;
+  color: var(--dim);
+  margin-top: 2px;
+  letter-spacing: 1px;
+}
+
+#stage {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  margin: 16px auto 6px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+#ring {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+
+#ring circle {
+  fill: none;
+}
+
+#ring .track {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 5;
+}
+
+#ring .prog {
+  stroke: var(--breathe);
+  stroke-width: 5;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s linear, stroke 0.5s;
+}
+
+#orb {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, rgba(125, 211, 252, 0.5), rgba(125, 211, 252, 0.06) 68%, transparent 72%);
+  box-shadow: inset 0 0 60px rgba(125, 211, 252, 0.35);
+  transform: scale(0.55);
+  transition: transform 4s linear, background 0.6s, box-shadow 0.6s;
+}
+
+body.k-in #orb {
+  background: radial-gradient(circle at 50% 50%, rgba(125, 211, 252, 0.55), rgba(125, 211, 252, 0.06) 68%, transparent 72%);
+  box-shadow: inset 0 0 70px rgba(125, 211, 252, 0.45);
+}
+
+body.k-hold #orb {
+  background: radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.42), rgba(251, 191, 36, 0.05) 68%, transparent 72%);
+  box-shadow: inset 0 0 70px rgba(251, 191, 36, 0.35);
+}
+
+body.k-out #orb {
+  background: radial-gradient(circle at 50% 50%, rgba(167, 139, 250, 0.42), rgba(167, 139, 250, 0.05) 68%, transparent 72%);
+  box-shadow: inset 0 0 70px rgba(167, 139, 250, 0.35);
+}
+
+body.k-holdout #orb {
+  background: radial-gradient(circle at 50% 50%, rgba(148, 163, 184, 0.3), rgba(148, 163, 184, 0.04) 68%, transparent 72%);
+  box-shadow: inset 0 0 60px rgba(148, 163, 184, 0.25);
+}
+
+#core {
+  position: relative;
+  text-align: center;
+  z-index: 2;
+}
+
+#phase {
+  font-size: 14px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+#count {
+  font-size: 62px;
+  font-weight: 200;
+  line-height: 1.05;
+}
+
+#desc {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--dim);
+  text-align: center;
+  min-height: 38px;
+  padding: 0 6px;
+}
+
+#meta {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: var(--dim-2);
+  margin-top: 8px;
+  letter-spacing: 0.5px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+#actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+#actions .btn {
+  flex: 1;
+}
+
+#finish {
+  position: absolute;
+  inset: 0;
+  background: rgba(16, 13, 12, 0.97);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 30px;
+  text-align: center;
+}
+
+body.finished #finish {
+  display: flex;
+}
+
+body.finished #stage,
+body.finished #desc,
+body.finished #meta,
+body.finished #actions,
+body.finished #head {
+  visibility: hidden;
+}
+
+.fin-icon {
+  font-size: 46px;
+}
+
+.fin-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.fin-sub {
+  font-size: 13px;
+  color: var(--dim);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.fin-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}

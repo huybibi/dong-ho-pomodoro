@@ -1,0 +1,16 @@
+{
+  "name": "ca-chua-tap-trung",
+  "productName": "Cà Chua Tập Trung",
+  "version": "1.0.0",
+  "description": "Deep work companion: quả cà chua nổi trên desktop, hít thở tập trung, pomodoro always-on-top.",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "icons": "node tools/make-icons.js",
+    "smoke": "set DEEPWORK_SMOKE=1&& electron ."
+  },
+  "devDependencies": {
+    "electron": "^33.2.0"
+  }
+}

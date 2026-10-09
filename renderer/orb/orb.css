@@ -1,0 +1,167 @@
+html,
+body {
+  background: transparent;
+  overflow: hidden;
+}
+
+#stage {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: grid;
+  place-items: center;
+  animation: bob 5.2s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+#tomato {
+  width: 104px;
+  height: 104px;
+  filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.5));
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+body.running #tomato {
+  animation: breathe-scale 4s ease-in-out infinite;
+}
+
+@keyframes breathe-scale {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.045);
+  }
+}
+
+body.hot #tomato {
+  filter: drop-shadow(0 0 22px rgba(255, 90, 60, 0.65)) drop-shadow(0 10px 16px rgba(0, 0, 0, 0.5));
+}
+
+#ring {
+  position: absolute;
+  inset: 0;
+  width: 150px;
+  height: 150px;
+  transform: rotate(-90deg);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+body.running #ring {
+  opacity: 1;
+}
+
+#ring circle {
+  fill: none;
+  stroke-linecap: round;
+}
+
+#ring .track {
+  stroke: rgba(255, 255, 255, 0.11);
+  stroke-width: 4;
+}
+
+#ring .prog {
+  stroke: var(--focus);
+  stroke-width: 4.5;
+  stroke-dasharray: 327;
+  stroke-dashoffset: 327;
+  transition: stroke 0.4s;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+body.mode-break #ring .prog,
+body.mode-long #ring .prog {
+  stroke: var(--break);
+}
+
+body.mode-breathe #ring .prog {
+  stroke: var(--breathe);
+}
+
+#time {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(18, 15, 14, 0.9);
+  border: 1px solid var(--edge);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  white-space: nowrap;
+}
+
+body.running #time {
+  opacity: 1;
+}
+
+body.paused #time {
+  opacity: 1;
+  color: var(--hold);
+}
+
+#streak {
+  position: absolute;
+  top: 6px;
+  right: 4px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffb15c, #f0722b);
+  color: #2b1508;
+  font-size: 11px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity 0.25s;
+  box-shadow: 0 4px 10px rgba(240, 114, 43, 0.4);
+}
+
+body.streaked #streak {
+  opacity: 1;
+}
+
+#pulse {
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 90, 60, 0.5);
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.running #pulse {
+  animation: pulse 4s ease-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.86);
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}

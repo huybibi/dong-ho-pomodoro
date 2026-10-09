@@ -1,0 +1,171 @@
+:root {
+  --bg: rgba(20, 17, 16, 0.86);
+  --bg-solid: #141110;
+  --panel: rgba(255, 255, 255, 0.05);
+  --panel-2: rgba(255, 255, 255, 0.09);
+  --edge: rgba(255, 255, 255, 0.12);
+  --txt: #f4eeea;
+  --dim: #a89d97;
+  --dim-2: #6f6660;
+  --tomato: #ff5a3c;
+  --focus: #ff6b4a;
+  --break: #37d399;
+  --breathe: #7dd3fc;
+  --hold: #fbbf24;
+  --out: #a78bfa;
+  --idle: #8b817b;
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  --radius: 18px;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: transparent;
+  color: var(--txt);
+  font-family: 'Segoe UI Variable Display', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+  cursor: default;
+}
+
+.card {
+  background: var(--bg);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+}
+
+.mono {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  color: var(--txt);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.15s, transform 0.1s, border-color 0.15s;
+}
+
+.btn:hover {
+  background: var(--panel-2);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn.primary {
+  background: linear-gradient(180deg, #ff7350, #e13c22);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(225, 60, 34, 0.35);
+}
+
+.btn.primary:hover {
+  background: linear-gradient(180deg, #ff8763, #ec472b);
+}
+
+.btn.ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--dim);
+}
+
+.btn.ghost:hover {
+  color: var(--txt);
+  background: var(--panel);
+}
+
+.chip {
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  font-size: 12px;
+  color: var(--dim);
+  font-weight: 600;
+}
+
+.chip.on {
+  background: rgba(255, 90, 60, 0.18);
+  border-color: rgba(255, 90, 60, 0.5);
+  color: #ffd9cf;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+input[type='text'],
+input[type='number'] {
+  -webkit-user-select: text;
+  user-select: text;
+  font-family: inherit;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--edge);
+  border-radius: 11px;
+  color: var(--txt);
+  padding: 10px 12px;
+  font-size: 13px;
+  outline: none;
+}
+
+input[type='text']:focus,
+input[type='number']:focus {
+  border-color: rgba(255, 90, 60, 0.6);
+}
+
+input[type='range'] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.16);
+  outline: none;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--tomato);
+  border: 2px solid #fff2;
+  cursor: pointer;
+}

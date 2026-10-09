@@ -1,0 +1,13 @@
+# phụ thuộc
+node_modules/
+# đầu ra đóng gói
+dist/
+out/
+# nhật ký & tệp tạm
+*.log
+npm-debug.log*
+.probe
+*.bak
+# hệ điều hành
+Thumbs.db
+desktop.ini

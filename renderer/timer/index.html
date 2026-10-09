@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'" />
+    <link rel="stylesheet" href="../shared/base.css" />
+    <link rel="stylesheet" href="timer.css" />
+  </head>
+  <body>
+    <div id="card" class="card">
+      <div id="clock" class="mono">25:00</div>
+      <div id="intent"></div>
+      <button id="stop" title="Kết thúc phiên (Ctrl+Alt+X)">✕</button>
+      <div id="toast"></div>
+
+      <div id="abort">
+        <div class="abort-title">Vì sao dừng sớm?</div>
+        <div class="abort-sub">Ghi lại một lần, vài hôm nữa sẽ thấy bạn hay bị cắt ngang vì gì.</div>
+        <div id="reasons"></div>
+        <div class="abort-foot">
+          <button class="btn ghost" id="abort-cancel">Quay lại làm tiếp</button>
+        </div>
+      </div>
+    </div>
+    <script src="../shared/util.js"></script>
+    <script src="timer.js"></script>
+  </body>
+</html>
