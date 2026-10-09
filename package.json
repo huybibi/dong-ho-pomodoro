@@ -2,7 +2,7 @@
   "name": "ca-chua-tap-trung",
   "productName": "Cà Chua Tập Trung",
   "version": "1.0.0",
-  "description": "Deep work companion: quả cà chua nổi trên desktop, hít thở tập trung, pomodoro always-on-top.",
+  "description": "Đồng hồ Pomodoro hỗ trợ phiên làm việc sâu (deep work): đếm ngược always-on-top, hít thở tập trung, thống kê chuỗi ngày.",
   "main": "main.js",
   "private": true,
   "scripts": {

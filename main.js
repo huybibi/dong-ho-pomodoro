@@ -498,7 +498,7 @@ function buildTray() {
   engine.remaining; // noop giữ nhịp cập nhật
   const running = engine.running && (engine.mode === 'focus' || engine.mode === 'break' || engine.mode === 'long');
   const menu = Menu.buildFromTemplate([
-    { label: running ? `${MODE_LABEL[engine.mode]} · ${fmtLeft(engine.remaining)}` : 'Cà Chua Tập Trung', enabled: false },
+    { label: running ? `${MODE_LABEL[engine.mode]} · ${fmtLeft(engine.remaining)}` : 'Đồng hồ Pomodoro', enabled: false },
     { label: `Hôm nay: ${store.todaySummary().focus}/${S.dailyGoal} phiên · chuỗi ${store.streak().current} ngày`, enabled: false },
     { type: 'separator' },
     running
@@ -541,7 +541,7 @@ function buildTray() {
     { label: 'Thoát', click: () => { quitting = true; app.quit(); } },
   ]);
   tray.setContextMenu(menu);
-  const tip = running ? `${MODE_LABEL[engine.mode]} · ${fmtLeft(engine.remaining)}` : 'Cà Chua Tập Trung';
+  const tip = running ? `${MODE_LABEL[engine.mode]} · ${fmtLeft(engine.remaining)}` : 'Đồng hồ Pomodoro';
   tray.setToolTip(tip);
 }
 
