@@ -14,11 +14,11 @@ const leftEl = U.q('#left');
 const descEl = U.q('#desc');
 
 let pattern = null;
-let lastIndex = -1;
+let lastSig = '';
 let lastScale = 0.55;
 let lastLeft = '';
 
-const LABEL = { in: 'Hít vào', out: 'Thở ra', hold: 'Giữ hơi', holdout: 'Giữ trống' };
+const LABEL = { prep: 'Chuẩn bị', in: 'Hít vào', out: 'Thở ra', hold: 'Nín thở', holdout: 'Nín thở' };
 
 function setPhase(kind, seconds) {
   document.body.className = document.body.className
@@ -32,9 +32,11 @@ function setPhase(kind, seconds) {
   else if (kind === 'out') target = 0.55;
   else if (kind === 'hold') target = 1;
   else if (kind === 'holdout') target = 0.55;
+  else if (kind === 'prep') target = 0.55;
 
   const dur = Math.max(0.2, Math.min(30, seconds || 4));
-  orb.style.transition = `transform ${kind === 'hold' || kind === 'holdout' ? 0.6 : dur}s linear, background 0.6s, box-shadow 0.6s`;
+  const slow = kind === 'hold' || kind === 'holdout' || kind === 'prep';
+  orb.style.transition = `transform ${slow ? 0.6 : dur}s linear, background 0.6s, box-shadow 0.6s`;
   orb.style.transform = `scale(${target})`;
   lastScale = target;
 }
@@ -48,15 +50,16 @@ function paint(st) {
     return;
   }
 
-  if (b.index !== lastIndex) {
-    lastIndex = b.index;
+  const sig = `${b.index}|${b.kind}|${b.stepTotal}`;
+  if (sig !== lastSig) {
+    lastSig = sig;
     setPhase(b.kind, b.stepTotal);
     phaseEl.textContent = b.label && b.label.length > 26 ? LABEL[b.kind] : b.label || LABEL[b.kind];
     descEl.textContent = b.label && b.label.length > 26 ? b.label : '';
   }
 
   countEl.textContent = b.stepLeft > 9.5 ? String(Math.ceil(b.stepLeft)) : b.stepLeft.toFixed(1);
-  stepEl.textContent = `Bước ${b.index + 1}/${b.count}`;
+  stepEl.textContent = b.prep ? 'Chuẩn bị' : `Bước ${b.index + 1}/${b.count}`;
   if (st.clock !== lastLeft) {
     lastLeft = st.clock;
     leftEl.textContent = `còn ${st.clock}`;
@@ -96,7 +99,7 @@ window.tomato.onEvent((ev) => {
     U.q('#name').textContent = pattern.name;
     U.q('#tag').textContent = `${pattern.icon || ''} ${pattern.tag} · ${pattern.goal || ''}`.trim();
     descEl.textContent = pattern.desc;
-    lastIndex = -1;
+    lastSig = '';
     lastScale = 0.55;
     orb.style.transition = 'none';
     orb.style.transform = 'scale(0.55)';

@@ -125,7 +125,7 @@ main.js              tiến trình chính: 6 cửa sổ, engine đếm giờ, tr
 preload.js           cầu nối an toàn (contextBridge) → window.tomato
 patterns.js          6 bài thở, mỗi bài là danh sách bước {loại, giây, nhãn}
 store.js             lưu/đọc deepwork.json + thống kê, chuỗi ngày, lý do bỏ phiên
-tools/make-icons.js  tự vẽ và tự mã hoá PNG/ICO, không dùng thư viện ngoài
+tools/make-icons.js  render chính SVG quả cà chua của cửa sổ orb thành PNG/ICO
 renderer/
   orb/       biểu tượng cà chua nổi + vòng tiến độ (chỉ quả nhận chuột)
   timer/     con số đếm ngược + panel lý do dừng sớm

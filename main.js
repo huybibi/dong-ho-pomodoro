@@ -171,15 +171,17 @@ function publicState() {
   let breath = null;
   if (engine.mode === 'breathe' && b && engine.steps) {
     const step = engine.steps[b.index] || engine.steps[engine.steps.length - 1];
+    const prep = Math.max(0, b.prep || 0);
     breath = {
       patternId: engine.patternId,
-      index: b.index,
+      index: prep > 0 ? 0 : b.index,
       count: engine.steps.length,
-      label: step.l,
-      kind: step.k,
-      stepTotal: step.s,
-      stepLeft: Math.max(0, b.stepLeft),
+      label: prep > 0 ? 'Chuẩn bị' : step.l,
+      kind: prep > 0 ? 'prep' : step.k,
+      stepTotal: prep > 0 ? BREATH_PREP : step.s,
+      stepLeft: prep > 0 ? prep : Math.max(0, b.stepLeft),
       round: Math.floor(b.index / engine.steps.length) + 1,
+      prep: prep > 0,
     };
   }
   return {
@@ -225,10 +227,26 @@ function tick() {
   broadcast();
 }
 
+function endPrep() {
+  engine.breath.prep = 0;
+  const first = engine.steps[0];
+  sendTo(['breathe', 'audio', 'timer'], { type: 'phase', kind: first.k, label: first.l, dur: first.s });
+}
+
 function tickBreathe(dt) {
   const b = engine.breath;
   const steps = engine.steps;
   if (!b || !steps) return;
+  if (b.prep > 0) {
+    b.prep -= dt;
+    if (b.prep > 0) {
+      broadcast();
+      return;
+    }
+    endPrep();
+    broadcast();
+    return;
+  }
   engine.remaining = Math.max(0, engine.remaining - dt);
   b.stepLeft -= dt;
   let guard = 0;
@@ -341,6 +359,8 @@ function skip() {
   }
 }
 
+const BREATH_PREP = 5; /* giây chuẩn bị trước khi bài thở bắt đầu */
+
 function startBreathe(id) {
   const p = getPattern(id);
   if (!p) return;
@@ -354,7 +374,7 @@ function startBreathe(id) {
   engine.remaining = engine.total;
   engine.label = p.name;
   engine.intent = '';
-  engine.breath = { index: 0, stepLeft: built.steps[0].s };
+  engine.breath = { index: 0, stepLeft: built.steps[0].s, prep: BREATH_PREP };
   engine.startedAt = Date.now();
   store.patch({ lastPattern: p.id });
   sendTo(['breathe', 'audio', 'timer'], {
@@ -379,6 +399,11 @@ function finishBreathe() {
 
 function breatheSkipStep() {
   if (engine.mode !== 'breathe' || !engine.breath) return;
+  if (engine.breath.prep > 0) {
+    endPrep();
+    broadcast();
+    return;
+  }
   engine.breath.stepLeft = 0;
   tickBreathe(0);
 }
@@ -387,9 +412,9 @@ function breatheLoop() {
   if (engine.mode !== 'breathe' || !engine.steps || !engine.breath) return;
   engine.breath.index = 0;
   engine.breath.stepLeft = engine.steps[0].s;
+  engine.breath.prep = BREATH_PREP;
   engine.remaining = engine.total;
   engine.running = true;
-  sendTo(['breathe'], { type: 'phase', kind: engine.steps[0].k, label: engine.steps[0].l });
   broadcast();
 }
 
@@ -923,11 +948,14 @@ app.whenReady().then(() => {
       log('week', store.week().map((d) => d.focus));
       log('streak', store.streak());
 
+      const orbBody = await wins.orb.webContents.executeJavaScript('document.querySelector("#fruit #body path").getAttribute("d")');
+      log('prep', { breath: publicState().breath, remaining: Math.round(engine.remaining * 10) / 10, total: engine.total });
+
       const probes = {
         orb: '({tag: document.querySelector("svg") ? "svg" : "none", txt: document.body.innerText.replace(/\\s+/g, " ").slice(0, 40), hit: ((at) => { const e = document.elementFromPoint(at[0], at[1]); return !!(e && e.closest && e.closest("#fruit")); })([75, 75]), edge: ((at) => { const e = document.elementFromPoint(at[0], at[1]); return !!(e && e.closest && e.closest("#fruit")); })([6, 6])})',
         timer: '({txt: document.body.innerText.replace(/\\s+/g, " ").slice(0, 40), card: ((c) => { const s = getComputedStyle(c); const r = c.getBoundingClientRect(); return { bg: s.backgroundColor, blur: s.backdropFilter, shadow: s.boxShadow, radius: s.borderRadius, box: Math.round(r.width) + "x" + Math.round(r.height) }; })(document.querySelector("#card")), clock: getComputedStyle(document.querySelector("#clock")).fontSize, ts: getComputedStyle(document.querySelector("#card")).getPropertyValue("--ts")})',
-        breathe: '({txt: document.body.innerText.replace(/\\s+/g, " ").slice(0, 50)})',
-        menu: '({txt: document.body.innerText.replace(/\\s+/g, " ").slice(0, 60), btns: document.querySelectorAll("button").length})',
+        breathe: '({txt: document.body.innerText.replace(/\\s+/g, " ").slice(0, 50), phase: document.querySelector("#phase").textContent, step: document.querySelector("#step").textContent, count: document.querySelector("#count").textContent, kind: (document.body.className.match(/k-[a-z]+/) || [""])[0]})',
+        menu: `({txt: document.body.innerText.replace(/\\s+/g, " ").slice(0, 60), btns: document.querySelectorAll("button").length, tomatoSharesOrb: document.querySelector("#mini #fruit path") ? document.querySelector("#mini #fruit path").getAttribute("d") === ${JSON.stringify(orbBody)} : false})`,
         settings: '({tabs: document.querySelectorAll(".tab").length, cards: document.querySelectorAll(".stat").length, bars: document.querySelectorAll(".wbar").length, txt: document.body.innerText.replace(/\\s+/g, " ").slice(0, 40)})',
       };
       for (const [name, expr] of Object.entries(probes)) {
@@ -936,6 +964,14 @@ app.whenReady().then(() => {
         } catch (e) {
           log(`dom:${name}`, `ERR ${e.message}`);
         }
+      }
+
+      breatheSkipStep();
+      log('afterPrepSkip', publicState().breath);
+      try {
+        log('dom:breathe2', await wins.breathe.webContents.executeJavaScript('({txt: document.body.innerText.replace(/\\s+/g, " ").slice(0, 50), phase: document.querySelector("#phase").textContent, step: document.querySelector("#step").textContent, kind: (document.body.className.match(/k-[a-z]+/) || [""])[0]})'));
+      } catch (e) {
+        log('dom:breathe2', `ERR ${e.message}`);
       }
       console.log('SMOKE OK');
       quitting = true;

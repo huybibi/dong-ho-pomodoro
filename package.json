@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "start": "electron .",
-    "icons": "node tools/make-icons.js",
+    "icons": "electron tools/make-icons.js",
     "smoke": "set DEEPWORK_SMOKE=1&& electron ."
   },
   "devDependencies": {

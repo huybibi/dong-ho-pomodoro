@@ -1,7 +1,7 @@
 'use strict';
 
 /* Các bài hướng dẫn hít thở. Mỗi bước: { k: loại pha, s: số giây, l: nhãn }
-   k = in (hít vào) | hold (giữ hơi) | out (thở ra) | holdout (giữ trống) */
+   k = in (hít vào) | hold (nín thở) | out (thở ra) | holdout (nín thở) */
 
 const IN = (s, l) => ({ k: 'in', s, l });
 const HOLD = (s, l) => ({ k: 'hold', s, l });
@@ -24,10 +24,10 @@ const PATTERNS = [
     name: 'Thở hộp',
     tag: '4 · 4 · 4 · 4',
     goal: 'Bình tĩnh & kiểm soát',
-    desc: 'Hít 4 — giữ 4 — thở ra 4 — giữ trống 4. Bài của lực lượng đặc nhiệm, dùng khi cần bình tĩnh ngay lập tức.',
+    desc: 'Hít 4 — nín 4 — thở ra 4 — nín 4. Bài của lực lượng đặc nhiệm, dùng khi cần bình tĩnh ngay lập tức.',
     icon: '▢',
     build() {
-      return { steps: cycle([IN(4, 'Hít vào'), HOLD(4, 'Giữ hơi'), OUT(4, 'Thở ra'), EMPTY(4, 'Giữ trống')], 6) };
+      return { steps: cycle([IN(4, 'Hít vào'), HOLD(4, 'Nín thở'), OUT(4, 'Thở ra'), EMPTY(4, 'Nín thở')], 6) };
     },
   },
   {
@@ -35,10 +35,10 @@ const PATTERNS = [
     name: 'Thở 4-7-8',
     tag: '4 · 7 · 8',
     goal: 'Thư giãn sâu',
-    desc: 'Hít 4 — giữ 7 — thở ra 8. Nhịp thở dài giúp hạ nhịp tim, cắt cơn lo lắng, dễ vào giấc.',
+    desc: 'Hít 4 — nín 7 — thở ra 8. Nhịp thở dài giúp hạ nhịp tim, cắt cơn lo lắng, dễ vào giấc.',
     icon: '☾',
     build() {
-      return { steps: cycle([IN(4, 'Hít vào'), HOLD(7, 'Giữ hơi'), OUT(8, 'Thở ra chậm')], 6) };
+      return { steps: cycle([IN(4, 'Hít vào'), HOLD(7, 'Nín thở'), OUT(8, 'Thở ra chậm')], 6) };
     },
   },
   {
@@ -77,15 +77,15 @@ const PATTERNS = [
     desc: 'Nhịp nhanh, dứt khoát. Dùng cho phiên đầu giờ chiều khi não muốn sập nguồn.',
     icon: '⚡',
     build() {
-      return { steps: cycle([IN(2, 'Hít vào mạnh'), HOLD(1, 'Giữ'), OUT(2, 'Thở ra dứt khoát')], 20) };
+      return { steps: cycle([IN(2, 'Hít vào mạnh'), HOLD(1, 'Nín thở'), OUT(2, 'Thở ra dứt khoát')], 20) };
     },
   },
   {
     id: 'wimhof',
     name: 'Wimhof',
-    tag: '30 nhịp · giữ hơi · hồi phục',
+    tag: '30 nhịp · nín thở · hồi phục',
     goal: 'Sức mạnh & tỉnh táo',
-    desc: '3 vòng: 30 nhịp thở mạnh, giữ hơi 30s, hít đầy giữ 15s. Cảnh báo: không làm khi đang lái xe, đang ở trong nước, hoặc có bệnh tim mạch.',
+    desc: '3 vòng: 30 nhịp thở mạnh, nín thở 30s, hít đầy nín 15s. Cảnh báo: không làm khi đang lái xe, đang ở trong nước, hoặc có bệnh tim mạch.',
     icon: '✦',
     build() {
       const steps = [];
@@ -94,9 +94,9 @@ const PATTERNS = [
           steps.push(IN(2, `Vòng ${r} · nhịp mạnh ${i}/30`));
           steps.push(OUT(2, `Vòng ${r} · thở ra ${i}/30`));
         }
-        steps.push(HOLD(30, `Vòng ${r} · giữ hơi, thả lỏng`));
+        steps.push(HOLD(30, `Vòng ${r} · nín thở, thả lỏng`));
         steps.push(IN(3, `Vòng ${r} · hít đầy`));
-        steps.push(HOLD(15, `Vòng ${r} · giữ`));
+        steps.push(HOLD(15, `Vòng ${r} · nín thở`));
         steps.push(OUT(4, `Vòng ${r} · thở ra chậm`));
       }
       return { steps };
