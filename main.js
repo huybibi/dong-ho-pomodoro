@@ -106,6 +106,7 @@ function show(name, focus = false) {
   if (w.isVisible()) return;
   if (focus) w.show();
   else w.showInactive();
+  if (w.__clickThrough !== undefined) w.setIgnoreMouseEvents(!!w.__clickThrough, { forward: true });
 }
 
 function hide(name) {
@@ -754,7 +755,11 @@ ipcMain.on('win:size', (e, w2, h2) => {
 
 ipcMain.on('win:clickThrough', (e, flag) => {
   const w = BrowserWindow.fromWebContents(e.sender);
-  if (w && !w.isDestroyed()) w.setIgnoreMouseEvents(!!flag, { forward: true });
+  if (!w || w.isDestroyed()) return;
+  w.__clickThrough = !!flag;
+  // Hoãn tới khi cửa sổ thực sự hiện (xem show()): đặt chế độ chuột xuyên qua lúc cửa sổ
+  // còn ẩn không có tác dụng và dễ khiến Windows áp trạng thái ẩn.
+  if (w.isVisible()) w.setIgnoreMouseEvents(!!flag, { forward: true });
 });
 
 ipcMain.on('drag:start', (e) => {
@@ -815,6 +820,12 @@ app.whenReady().then(() => {
     store.setPos('orb', [b.x, b.y]);
   });
 
+  // Quả cà chua phải được hiện tường minh: cửa sổ tạo bằng show:false không tự hiện, và hiện
+  // trước khi trang vẽ xong thì chỉ thấy một khung trong suốt. Chờ khung hình đầu tiên.
+  wins.orb.once('ready-to-show', () => {
+    if (!S.hideOrb) show('orb');
+  });
+
   mk('timer', 'timer/index.html', { width: 230, height: 96, transparent: true });
   wins.timer.setAlwaysOnTop(true, 'screen-saver');
   wins.timer.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
@@ -868,6 +879,12 @@ app.whenReady().then(() => {
 
   setInterval(tick, 100);
   broadcast();
+
+  // Bảo hiểm: nếu vì lý do nào đó 'ready-to-show' không phát ra, vẫn hiện quả cà chua.
+  setTimeout(() => {
+    if (S.hideOrb) return;
+    if (wins.orb && !wins.orb.isDestroyed() && !wins.orb.isVisible()) show('orb');
+  }, 1500);
 
   if (SMOKE) {
     const names = () => Object.keys(wins).filter((k) => wins[k] && !wins[k].isDestroyed()).join(',');
