@@ -12,6 +12,9 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  /* Thẻ tràn kín cửa sổ nên bóng đổ chỉ bị mép cửa sổ cắt lại ở bốn góc bo —
+     bỏ bóng để không còn vệt mờ vuông ở góc dưới. */
+  box-shadow: none;
 }
 
 #head {

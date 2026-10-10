@@ -865,7 +865,17 @@ app.whenReady().then(() => {
 
   mk('audio', 'audio/index.html', { width: 2, height: 2, x: -3000, y: -3000, show: false, skipTaskbar: true });
 
-  mk('orb', 'orb/index.html', { width: 150, height: 150, transparent: true });
+  // Cửa sổ orb đã rộng thêm 32px (16px mỗi bên) để chứa quầng sáng: dịch vị trí đã lưu
+  // đúng 16px một lần, nhờ vậy quả cà chua vẫn nằm nguyên chỗ user đã đặt.
+  if (!S.orbPadFix) {
+    if (Array.isArray(store.positions.orb)) {
+      store.setPos('orb', [store.positions.orb[0] - 16, store.positions.orb[1] - 16]);
+    }
+    store.patch({ orbPadFix: true });
+  }
+  // Cửa sổ lớn hơn phần vẽ 150×150 để quầng sáng của vòng tiến độ và của quả cà chua
+  // (drop-shadow) tàn dần bên trong cửa sổ — nếu sát mép, quầng bị cắt thành viền mờ hình vuông.
+  mk('orb', 'orb/index.html', { width: 182, height: 182, transparent: true });
   wins.orb.setAlwaysOnTop(true, 'screen-saver');
   wins.orb.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
   place('orb');
@@ -984,7 +994,7 @@ app.whenReady().then(() => {
       log('prep', { breath: publicState().breath, remaining: Math.round(engine.remaining * 10) / 10, total: engine.total });
 
       const probes = {
-        orb: '({tag: document.querySelector("svg") ? "svg" : "none", txt: document.body.innerText.replace(/\\s+/g, " ").slice(0, 40), hit: ((at) => { const e = document.elementFromPoint(at[0], at[1]); return !!(e && e.closest && e.closest("#fruit")); })([75, 75]), edge: ((at) => { const e = document.elementFromPoint(at[0], at[1]); return !!(e && e.closest && e.closest("#fruit")); })([6, 6])})',
+        orb: '({tag: document.querySelector("svg") ? "svg" : "none", txt: document.body.innerText.replace(/\\s+/g, " ").slice(0, 40), hit: ((at) => { const e = document.elementFromPoint(at[0], at[1]); return !!(e && e.closest && e.closest("#fruit")); })([91, 91]), edge: ((at) => { const e = document.elementFromPoint(at[0], at[1]); return !!(e && e.closest && e.closest("#fruit")); })([6, 6])})',
         timer: '({txt: document.body.innerText.replace(/\\s+/g, " ").slice(0, 40), card: ((c) => { const s = getComputedStyle(c); const r = c.getBoundingClientRect(); return { bg: s.backgroundColor, blur: s.backdropFilter, shadow: s.boxShadow, radius: s.borderRadius, box: Math.round(r.width) + "x" + Math.round(r.height) }; })(document.querySelector("#card")), clock: getComputedStyle(document.querySelector("#clock")).fontSize, ts: getComputedStyle(document.querySelector("#card")).getPropertyValue("--ts")})',
         breathe: '({txt: document.body.innerText.replace(/\\s+/g, " ").slice(0, 50), phase: document.querySelector("#phase").textContent, step: document.querySelector("#step").textContent, count: document.querySelector("#count").textContent, kind: (document.body.className.match(/k-[a-z]+/) || [""])[0]})',
         menu: `({txt: document.body.innerText.replace(/\\s+/g, " ").slice(0, 60), btns: document.querySelectorAll("button").length, tomatoSharesOrb: document.querySelector("#mini #fruit path") ? document.querySelector("#mini #fruit path").getAttribute("d") === ${JSON.stringify(orbBody)} : false})`,
@@ -996,6 +1006,28 @@ app.whenReady().then(() => {
         } catch (e) {
           log(`dom:${name}`, `ERR ${e.message}`);
         }
+      }
+
+      /* Menu tự cao theo nội dung: chú thích dài (mục "chú thích" dưới danh sách bài thở)
+         không được sinh thanh cuộn — cửa sổ phải nới ra rồi thu về như cũ. */
+      const later = (ms) => new Promise((r) => setTimeout(r, ms));
+      const fitExpr = '({win: window.innerHeight, view: (() => { const v = document.querySelector(".view.on"); return v ? { id: v.id, scroll: v.scrollHeight, client: v.clientHeight } : null; })(), note: ((n) => n ? n.offsetHeight : -1)(document.querySelector("#v-breathe .note")), card: Math.round(document.querySelector("#card").getBoundingClientRect().height)})';
+      try {
+        wins.menu.showInactive();
+        wins.menu.webContents.send('nav', 'breathe');
+        await later(400);
+        log('dom:menuFitBase', await wins.menu.webContents.executeJavaScript(fitExpr));
+        await wins.menu.webContents.executeJavaScript('(() => { const n = document.querySelector("#v-breathe .note"); n.textContent = n.textContent.repeat(6); })()');
+        wins.menu.webContents.send('nav', 'breathe');
+        await later(400);
+        log('dom:menuFitLong', await wins.menu.webContents.executeJavaScript(fitExpr));
+        log('b:menuFitLong', wins.menu.getBounds());
+        wins.menu.webContents.send('nav', 'main');
+        await later(400);
+        log('dom:menuFitBack', await wins.menu.webContents.executeJavaScript(fitExpr));
+        log('b:menuFitBack', wins.menu.getBounds());
+      } catch (e) {
+        log('dom:menuFit', `ERR ${e.message}`);
       }
 
       breatheSkipStep();

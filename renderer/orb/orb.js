@@ -44,8 +44,8 @@ U.q('#stage').addEventListener('dblclick', () => {
   else window.tomato.action('focus:start', { minutes: last.settings.focusMin, intent: last.intent });
 });
 
-/* Cửa sổ cà chua rộng 150px nhưng quả chỉ chiếm giữa: phần trong suốt để chuột xuyên qua,
-   chỉ khi trỏ đúng vào quả cà chua thì cửa sổ mới nhận chuột. */
+/* Cửa sổ cà chua rộng 182px nhưng quả chỉ chiếm giữa (150px, chừa 16px cho quầng sáng):
+   phần trong suốt để chuột xuyên qua, chỉ khi trỏ đúng vào quả cà chua thì cửa sổ mới nhận chuột. */
 let clickThrough = null;
 let dragging = false;
 

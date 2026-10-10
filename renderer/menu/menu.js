@@ -16,8 +16,28 @@ let selected = 25;
 
 const views = ['main', 'breathe', 'ambient'];
 
+/* Cửa sổ menu tự cao lên theo nội dung: chú thích dài không còn sinh thanh cuộn.
+   Đo chiều cao thật của thẻ bằng cách cho nó cao tự do trong một nhịp vẽ. */
+const MENU_W = 372;
+const MENU_MIN_H = 580;
+let fitTimer = 0;
+
+function autoFit() {
+  if (fitTimer) return;
+  fitTimer = setTimeout(() => {
+    fitTimer = 0;
+    const card = U.q('#card');
+    const prev = card.style.height;
+    card.style.height = 'auto';
+    const need = Math.ceil(card.getBoundingClientRect().height);
+    card.style.height = prev;
+    window.tomato.win.setSize(MENU_W, Math.max(MENU_MIN_H, need));
+  }, 16);
+}
+
 function show(view) {
   for (const v of views) U.q(`#v-${v}`).classList.toggle('on', v === view);
+  autoFit();
 }
 
 U.qa('[data-back]').forEach((b) => b.addEventListener('click', () => show('main')));
@@ -175,6 +195,7 @@ function paint(next) {
     sig.today = '1';
     renderPatterns();
   }
+  autoFit();
 }
 
 U.drag(U.q('#head'), null);

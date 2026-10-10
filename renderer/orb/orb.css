@@ -8,6 +8,9 @@ body {
   position: relative;
   width: 150px;
   height: 150px;
+  /* Chừa 16px quanh phần vẽ: cửa sổ orb là 182×182, nhờ vậy quầng sáng drop-shadow
+     của #ring và của body.hot #tomato không bị mép cửa sổ cắt thành vệt vuông. */
+  margin: 16px;
   display: grid;
   place-items: center;
   animation: bob 5.2s ease-in-out infinite;
