@@ -95,7 +95,7 @@ tiếng nâu · mưa · sóng biển · quán cà phê · lửa · chuông 432 H
 
 ## Những thứ khác đã có trong máy
 
-- **Chuỗi ngày (streak)** hiện ngay trên biểu tượng — đừng để đứt.
+- **Chuỗi ngày (streak)** hiện ở thẻ *Hôm nay* trong bảng chọn — đừng để đứt.
 - **Nhắc 20-20-20**: vào giờ nghỉ, nhắc nhìn ra xa 6 mét trong 20 giây.
 - **Nhắc uống nước** trong giờ nghỉ dài.
 - **Tự chuyển nhịp**: hết phiên tự vào giờ nghỉ, nghỉ dài sau mỗi N phiên.

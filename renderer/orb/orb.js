@@ -5,7 +5,6 @@ const C = 2 * Math.PI * 52;
 ring.style.strokeDasharray = String(C);
 
 const timeEl = U.q('#time');
-const streakEl = U.q('#streak');
 const body = document.body;
 
 let last = null;
@@ -19,7 +18,6 @@ function paint(st) {
   body.classList.toggle('mode-break', st.mode === 'break');
   body.classList.toggle('mode-long', st.mode === 'long');
   body.classList.toggle('mode-breathe', st.mode === 'breathe');
-  body.classList.toggle('streaked', st.streak.current > 0);
 
   const p = st.mode === 'breathe' && st.breath ? st.breath.index / Math.max(1, st.breath.count) : st.progress;
   ring.style.strokeDashoffset = String(C * (1 - Math.min(1, Math.max(0, p))));
@@ -33,7 +31,6 @@ function paint(st) {
   } else {
     timeEl.textContent = 'Bấm để bắt đầu';
   }
-  streakEl.textContent = String(st.streak.current);
 }
 
 U.drag(U.q('#stage'), () => window.tomato.action('menu:toggle'));
