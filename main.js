@@ -35,7 +35,7 @@ const S = store.settings;
 let tray = null;
 let quitting = false;
 const wins = {};
-const dragging = { win: null, origin: null, offX: 0, offY: 0, timer: null };
+const dragging = { win: null, origin: null, size: null, offX: 0, offY: 0, timer: null };
 const timers = { tips: [] };
 
 /* ------------------------------------------------------------------ windows */
@@ -781,7 +781,11 @@ ipcMain.on('win:size', (e, w2, h2) => {
   const area = workArea(w);
   let y = b.y;
   if (w === wins.timer) y = b.y + b.height - h2;
-  w.setBounds(clampTo({ x: b.x, y, width: Math.round(w2), height: Math.round(h2) }, area));
+  const next = clampTo({ x: b.x, y, width: Math.round(w2), height: Math.round(h2) }, area);
+  w.setBounds(next);
+  /* Nếu cửa sổ này đang được kéo, cập nhật luôn size đang giữ — để đổi cỡ hợp lệ giữa chừng
+     (vd hết phiên, mở bảng lý do) không bị followCursor kéo về cỡ cũ. */
+  if (dragging.win === w) dragging.size = { width: next.width, height: next.height };
 });
 
 ipcMain.on('win:clickThrough', (e, flag) => {
@@ -803,7 +807,14 @@ function followCursor() {
   const b = w.getBounds();
   const x = Math.round(p.x - dragging.offX);
   const y = Math.round(p.y - dragging.offY);
-  if (x !== b.x || y !== b.y) w.setPosition(x, y, false);
+  if (x === b.x && y === b.y) return undefined;
+  /* Dùng setBounds kèm size cố định, KHÔNG dùng setPosition.
+     Trên Windows ở màn hình có scale lệch (máy này 150%), mỗi lần setPosition bị làm tròn
+     DIP ↔ pixel vật lý và cửa sổ phình thêm ~1px; kéo một lúc là to đùng (đo được: 200 lần
+     kéo làm cửa sổ 230px phình thành 430px). setBounds ghi rõ width/height thì không cộng dồn
+     (200 lần kéo chỉ lệch 1px, coi như đứng yên). */
+  const s = dragging.size || b;
+  w.setBounds({ x, y, width: s.width, height: s.height });
   return undefined;
 }
 
@@ -813,6 +824,7 @@ function stopDrag() {
   const w = dragging.win;
   dragging.win = null;
   dragging.origin = null;
+  dragging.size = null;
   return w && !w.isDestroyed() ? w : null;
 }
 
@@ -824,6 +836,7 @@ ipcMain.on('drag:start', (e) => {
   const b = w.getBounds();
   dragging.win = w;
   dragging.origin = b;
+  dragging.size = { width: b.width, height: b.height };
   dragging.offX = Math.round(p.x - b.x);
   dragging.offY = Math.round(p.y - b.y);
   w.setIgnoreMouseEvents(false); /* trong lúc kéo cửa sổ phải nhận chuột liên tục */
