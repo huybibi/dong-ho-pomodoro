@@ -121,6 +121,12 @@ body.paused #time {
   color: var(--hold);
 }
 
+/* Phiên tập trung: chỉ để lại quả cà chua và vòng tiến độ. Ẩn hẳn viên thuốc
+   hiển thị số phút đếm lùi kèm nhãn "Tập trung". */
+body.hot #time {
+  opacity: 0;
+}
+
 #pulse {
   position: absolute;
   inset: 18px;
