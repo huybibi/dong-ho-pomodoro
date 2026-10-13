@@ -126,6 +126,7 @@ preload.js           cầu nối an toàn (contextBridge) → window.tomato
 patterns.js          6 bài thở, mỗi bài là danh sách bước {loại, giây, nhãn}
 store.js             lưu/đọc deepwork.json + thống kê, chuỗi ngày, lý do bỏ phiên
 tools/make-icons.js  render chính SVG quả cà chua của cửa sổ orb thành PNG/ICO
+tools/check-drag-size.py  kiểm tra hồi quy: kéo cửa sổ không được làm nó phình to
 renderer/
   orb/       biểu tượng cà chua nổi + vòng tiến độ (chỉ quả nhận chuột)
   timer/     con số đếm ngược + panel lý do dừng sớm
@@ -144,3 +145,5 @@ Sinh lại icon: `npm run icons`. Sinh lại ảnh demo: `set DEEPWORK_SHOTS=1&&
 - Cửa sổ dùng `alwaysOnTop` mức `screen-saver` để nổi trên cả ứng dụng toàn màn hình.
 - Đồng hồ đếm bằng `setInterval` 100 ms nhưng luôn tính lại từ `Date.now()`, nên không bị trôi khi máy bận.
 - Biểu tượng, đồng hồ và màn hình thở đều là cửa sổ trong suốt, không viền, kéo thả tự do và tự neo vào cạnh màn hình.
+- **Kéo cửa sổ tuyệt đối không để cửa sổ tự suy ra kích thước.** Mỗi bước kéo đều gọi `setBounds` kèm cỡ đã chốt lúc bắt đầu kéo (`__size`, cỡ do chính app đặt chứ không phải cỡ `getBounds()` trả về), và toạ độ được ghim vào lưới pixel vật lý. Trên màn hình scale lệch (máy phát triển: 150%) mà làm khác đi — dùng `setPosition`, hoặc lấy `getBounds()` làm cỡ — thì cửa sổ phình thêm ~1px mỗi lần đặt vị trí, kéo một lúc là to đùng.
+- Kiểm tra lại điều này sau mỗi lần sửa phần kéo cửa sổ: `python tools/check-drag-size.py` (script gửi chuột thật rồi đo bằng `GetWindowRect`, không dùng API của Electron nên không thể tự lừa mình).

@@ -71,6 +71,13 @@ function mk(name, file, opts = {}) {
     ...opts,
   });
   wins[name] = w;
+  /* Cỡ "chuẩn" của cửa sổ. Khi kéo phải dùng cỡ này chứ không dùng getBounds(): getBounds()
+     trả cỡ đã bị làm tròn LÊN theo DIP (cửa sổ 230 DIP đọc ra 231), lấy nó làm cỡ ghim thì
+     mỗi lần kéo cửa sổ trôi thêm 1px. Cửa sổ nào tự đổi cỡ (đồng hồ mở bảng lý do, menu đổi
+     view) thì win:size cập nhật lại — xem ipcMain 'win:size'. */
+  if (Number.isFinite(opts.width) && Number.isFinite(opts.height)) {
+    w.__size = { width: opts.width, height: opts.height };
+  }
   w.loadFile(path.join(RENDERER, file));
 
   w.webContents.on('console-message', (a, b, c, d) => {
@@ -858,18 +865,22 @@ ipcMain.on('drag:move', () => {
 });
 
 ipcMain.on('drag:end', () => {
+  /* Giữ lại cỡ đang ghim trước khi stopDrag() xoá — lúc thả chuột cũng đặt lại đúng cỡ đó,
+     để nếu có gì làm cửa sổ lệch đi giữa chừng thì nó được trả về ngay. */
+  const held = dragging.size;
   const w = stopDrag();
   if (!w) return;
   if (w.__clickThrough !== undefined) w.setIgnoreMouseEvents(!!w.__clickThrough, { forward: true });
   const b = w.getBounds();
+  const size = held || { width: b.width, height: b.height };
   const area = workArea(w);
   const snap = 30;
   let { x, y } = b;
   if (x < area.x + snap) x = area.x + 6;
-  else if (x + b.width > area.x + area.width - snap) x = area.x + area.width - b.width - 6;
+  else if (x + size.width > area.x + area.width - snap) x = area.x + area.width - size.width - 6;
   if (y < area.y + snap) y = area.y + 6;
-  else if (y + b.height > area.y + area.height - snap) y = area.y + area.height - b.height - 6;
-  const next = clampTo({ x, y, width: b.width, height: b.height }, area);
+  else if (y + size.height > area.y + area.height - snap) y = area.y + area.height - size.height - 6;
+  const next = clampTo({ x, y, width: size.width, height: size.height }, area);
   w.setBounds(next);
   for (const name of Object.keys(wins)) {
     if (wins[name] === w) store.setPos(name, [next.x, next.y]);
