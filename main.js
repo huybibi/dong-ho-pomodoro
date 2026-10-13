@@ -783,6 +783,9 @@ ipcMain.on('win:size', (e, w2, h2) => {
   if (w === wins.timer) y = b.y + b.height - h2;
   const next = clampTo({ x: b.x, y, width: Math.round(w2), height: Math.round(h2) }, area);
   w.setBounds(next);
+  /* Nhớ cỡ "chuẩn" mà renderer muốn. getBounds() trả cỡ đã bị làm tròn lên theo DIP nên
+     không dùng nó làm cỡ ghim khi kéo — xem followCursor(). */
+  w.__size = { width: next.width, height: next.height };
   /* Nếu cửa sổ này đang được kéo, cập nhật luôn size đang giữ — để đổi cỡ hợp lệ giữa chừng
      (vd hết phiên, mở bảng lý do) không bị followCursor kéo về cỡ cũ. */
   if (dragging.win === w) dragging.size = { width: next.width, height: next.height };
@@ -805,15 +808,19 @@ function followCursor() {
   if (!w || w.isDestroyed()) return stopDrag();
   const p = screen.getCursorScreenPoint();
   const b = w.getBounds();
-  const x = Math.round(p.x - dragging.offX);
-  const y = Math.round(p.y - dragging.offY);
-  if (x === b.x && y === b.y) return undefined;
-  /* Dùng setBounds kèm size cố định, KHÔNG dùng setPosition.
-     Trên Windows ở màn hình có scale lệch (máy này 150%), mỗi lần setPosition bị làm tròn
-     DIP ↔ pixel vật lý và cửa sổ phình thêm ~1px; kéo một lúc là to đùng (đo được: 200 lần
-     kéo làm cửa sổ 230px phình thành 430px). setBounds ghi rõ width/height thì không cộng dồn
-     (200 lần kéo chỉ lệch 1px, coi như đứng yên). */
   const s = dragging.size || b;
+  /* Bám con trỏ nhưng KHOÁ CỠ: luôn gọi setBounds kèm width/height chụp lúc bắt đầu kéo,
+     không bao giờ để cửa sổ tự suy ra cỡ (setPosition làm đúng điều đó và là thủ phạm cũ).
+     Đồng thời ghim góc trên-trái vào lưới pixel vật lý (màn hình scale 1.5 → bước 1/1.5 DIP).
+     Toạ độ DIP rơi vào nửa pixel thì Windows làm tròn cả rect và cửa sổ phình thêm 1px mỗi
+     lần đặt vị trí — kéo một lúc là to ra. Đo trên máy này: ghim lưới thì cỡ đứng yên, không
+     ghim thì 230×96 → 432×96 chỉ sau 200 lần đặt vị trí. */
+  const sf = screen.getDisplayNearestPoint(p).scaleFactor || 1;
+  const snap = (v) => Math.round(v * sf) / sf;
+  const x = snap(p.x - dragging.offX);
+  const y = snap(p.y - dragging.offY);
+  const samePos = Math.abs(x - b.x) < 0.5 && Math.abs(y - b.y) < 0.5;
+  if (samePos && b.width === s.width && b.height === s.height) return undefined;
   w.setBounds({ x, y, width: s.width, height: s.height });
   return undefined;
 }
@@ -836,7 +843,10 @@ ipcMain.on('drag:start', (e) => {
   const b = w.getBounds();
   dragging.win = w;
   dragging.origin = b;
-  dragging.size = { width: b.width, height: b.height };
+  /* Cỡ "chuẩn" do renderer đặt (win:size) chính xác hơn getBounds(): getBounds() đã làm tròn
+     lên theo DIP (cửa sổ 230 DIP đọc ra 231), lấy nó làm cỡ ghim thì mỗi lần kéo cửa sổ lại
+     trôi thêm 1px cho tới khi gặp điểm cố định. */
+  dragging.size = w.__size ? { width: w.__size.width, height: w.__size.height } : { width: b.width, height: b.height };
   dragging.offX = Math.round(p.x - b.x);
   dragging.offY = Math.round(p.y - b.y);
   w.setIgnoreMouseEvents(false); /* trong lúc kéo cửa sổ phải nhận chuột liên tục */
