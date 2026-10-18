@@ -48,7 +48,7 @@ Thao tác nhanh trên biểu tượng:
 
 Vùng trong suốt quanh biểu tượng **xuyên chuột**: chỉ khi trỏ đúng vào quả thì cửa sổ mới nhận chuột, còn lại bạn bấm thẳng được vào ứng dụng bên dưới.
 
-Bảng đếm ngược giờ chỉ có **con số** (cỡ tuỳ chỉnh trong Cài đặt ▸ Giao diện). Bấm vào con số để tạm dừng, kéo để đổi chỗ, nút ✕ hiện ra khi rê chuột vào để kết thúc phiên. Các nút **tạm dừng / +5 phút / bỏ qua** đã chuyển về Cài đặt ▸ Giao diện.
+Bảng đếm ngược giờ chỉ có **con số** (cỡ tuỳ chỉnh trong Cài đặt ▸ Giao diện). Trong phiên tập trung, ngay **dưới con số** có hai nút: **+5** (cộng thêm 5 phút) và **tạm dừng / tiếp tục** (kí hiệu pause/play). Bấm vào con số để tạm dừng, kéo để đổi chỗ, nút ✕ hiện ra khi rê chuột vào để kết thúc phiên. Bộ nút đầy đủ (**tạm dừng / +5 phút / bỏ qua**) vẫn nằm trong Cài đặt ▸ Giao diện.
 
 Khi lỡ phải dừng giữa phiên, cửa sổ đồng hồ sẽ hỏi **lý do**. Cứ chọn thật — vài ngày sau tab Thống kê sẽ chỉ ra thứ đang cắt ngang bạn nhiều nhất.
 
@@ -79,7 +79,7 @@ Ngoài ra còn **khay hệ thống** (góc phải taskbar): trạng thái hiện
 | **Thở mạch** | 5.5 · 5.5 | Nhịp ~5.5 giây, cộng hưởng với nhịp tim — ổn định cảm xúc |
 | **Thở dài sinh lý** | 2 nhịp hít + thở ra dài | Giảm căng nhanh nhất, chỉ ~76 giây |
 | **Nạp năng lượng** | 2 · 1 · 2 | Tỉnh táo trước việc nặng |
-| **Wim Hof** | 30 nhịp + nín thở | Đẩy năng lượng mạnh — **không làm khi đang lái xe hoặc ở trong nước** |
+| **Wim Hof** | 30 nhịp + nín 30/60/90s | Đẩy năng lượng mạnh — **không làm khi đang lái xe hoặc ở trong nước** |
 
 Mỗi bài đều có tiếng dẫn: âm cao dần khi hít vào, trầm dần khi thở ra.
 

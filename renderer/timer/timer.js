@@ -4,6 +4,8 @@
 const BASE = { w: 230, h: 96 };
 /* Bảng hỏi lý do giữ cỡ cố định để chữ luôn đọc được. */
 const ABORT = { w: 336, h: 236 };
+/* Chiều cao hàng nút +5 / tạm dừng, cộng thêm vào cửa sổ khi phiên tập trung đang chạy. */
+const CTRL = { h: 34 };
 
 const el = {
   card: U.q('#card'),
@@ -11,6 +13,7 @@ const el = {
   intent: U.q('#intent'),
   toast: U.q('#toast'),
   reasons: U.q('#reasons'),
+  pause: U.q('#pause'),
 };
 
 const REASONS = [
@@ -44,7 +47,8 @@ function scale() {
 function resize(aborting) {
   const s = scale();
   el.card.style.setProperty('--ts', String(s));
-  const next = aborting ? ABORT : { w: Math.round(BASE.w * s), h: Math.round(BASE.h * s) };
+  const extra = last && last.mode === 'focus' ? CTRL.h * s : 0;
+  const next = aborting ? ABORT : { w: Math.round(BASE.w * s), h: Math.round(BASE.h * s + extra) };
   if (next.w === size.w && next.h === size.h) return;
   size = next;
   window.tomato.win.setSize(next.w, next.h);
@@ -76,8 +80,11 @@ U.q('#stop').addEventListener('click', () => {
   else window.tomato.action('focus:stop', {});
 });
 
+U.q('#add5').addEventListener('click', () => window.tomato.action('focus:extend', { minutes: 5 }));
+U.q('#pause').addEventListener('click', () => window.tomato.action('focus:toggle'));
+
 U.drag(el.card, (e) => {
-  if (e.target.closest('#stop') || e.target.closest('#abort')) return;
+  if (e.target.closest('#stop') || e.target.closest('#abort') || e.target.closest('#controls')) return;
   window.tomato.action('focus:toggle');
 });
 
@@ -93,6 +100,8 @@ function paint(st) {
 
   el.clock.textContent = st.clock;
   el.intent.textContent = st.intent || '';
+  el.pause.title = st.running ? 'Tạm dừng (Ctrl+Alt+P)' : 'Tiếp tục (Ctrl+Alt+P)';
+  el.pause.setAttribute('aria-label', st.running ? 'Tạm dừng' : 'Tiếp tục');
 
   const active = st.mode === 'focus' || st.mode === 'break' || st.mode === 'long';
   if (active) resize(wasAborting);

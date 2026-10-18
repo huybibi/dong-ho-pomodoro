@@ -83,18 +83,19 @@ const PATTERNS = [
   {
     id: 'wimhof',
     name: 'Wimhof',
-    tag: '30 nhịp · nín thở · hồi phục',
+    tag: '30 nhịp · nín 30/60/90s · hồi phục',
     goal: 'Sức mạnh & tỉnh táo',
-    desc: '3 vòng: 30 nhịp thở mạnh, nín thở 30s, hít đầy nín 15s. Cảnh báo: không làm khi đang lái xe, đang ở trong nước, hoặc có bệnh tim mạch.',
+    desc: '3 vòng: 30 nhịp thở mạnh, nín thở 30s → 60s → 90s (dài dần theo vòng), hít đầy nín 15s. Cảnh báo: không làm khi đang lái xe, đang ở trong nước, hoặc có bệnh tim mạch.',
     icon: '✦',
     build() {
       const steps = [];
+      const hold = [30, 60, 90]; // nín thở sau mỗi vòng: vòng 1 = 30s, vòng 2 = 60s, vòng 3 = 90s
       for (let r = 1; r <= 3; r++) {
         for (let i = 1; i <= 30; i++) {
           steps.push(IN(2, `Vòng ${r} · nhịp mạnh ${i}/30`));
           steps.push(OUT(2, `Vòng ${r} · thở ra ${i}/30`));
         }
-        steps.push(HOLD(30, `Vòng ${r} · nín thở, thả lỏng`));
+        steps.push(HOLD(hold[r - 1], `Vòng ${r} · nín thở, thả lỏng`));
         steps.push(IN(3, `Vòng ${r} · hít đầy`));
         steps.push(HOLD(15, `Vòng ${r} · nín thở`));
         steps.push(OUT(4, `Vòng ${r} · thở ra chậm`));

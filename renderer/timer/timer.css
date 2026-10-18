@@ -62,6 +62,66 @@ body.paused #clock {
   opacity: 1;
 }
 
+/* Hàng nút +5 / tạm dừng: chỉ có ở phiên tập trung, nằm dưới đồng hồ đếm.
+   timer.js cộng thêm CTRL_H vào chiều cao cửa sổ đúng lúc hàng này hiện ra. */
+#controls {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: calc(8px * var(--ts));
+  margin-top: calc(6px * var(--ts));
+}
+
+body.mode-focus:not(.aborting) #controls {
+  display: flex;
+}
+
+#controls button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(26px * var(--ts));
+  min-width: calc(34px * var(--ts));
+  padding: 0 calc(10px * var(--ts));
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--txt);
+  font-size: calc(12px * var(--ts));
+  font-weight: 600;
+  line-height: 1;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+  -webkit-app-region: no-drag;
+}
+
+#controls button:hover {
+  background: rgba(255, 90, 60, 0.2);
+  border-color: rgba(255, 90, 60, 0.45);
+  color: #ffd9cf;
+}
+
+#controls button:active {
+  transform: scale(0.96);
+}
+
+#pause svg {
+  width: calc(14px * var(--ts));
+  height: calc(14px * var(--ts));
+  fill: currentColor;
+}
+
+#pause .ico-play {
+  display: none;
+}
+
+body.paused #pause .ico-play {
+  display: block;
+}
+
+body.paused #pause .ico-pause {
+  display: none;
+}
+
 #stop {
   position: absolute;
   top: 6px;
