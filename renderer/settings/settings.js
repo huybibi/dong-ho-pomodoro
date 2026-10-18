@@ -13,6 +13,12 @@ const AMBIENTS = [
 
 let st = null;
 
+/* Độ đậm / nhạt của bảng: ghi vào biến CSS --bg-alpha, mọi bảng dùng chung. */
+function applyOpacity(s) {
+  const v = s && Number.isFinite(Number(s.uiOpacity)) ? Math.min(1, Math.max(0.3, Number(s.uiOpacity))) : 0.86;
+  document.documentElement.style.setProperty('--bg-alpha', String(v));
+}
+
 /* ---------- điều hướng ---------- */
 
 U.qa('.tab').forEach((t) => {
@@ -159,6 +165,7 @@ function renderStats() {
 function paint(next) {
   st = next;
   const s = st.settings;
+  applyOpacity(s);
 
   U.qa('[data-key]').forEach((el) => {
     const key = el.dataset.key;

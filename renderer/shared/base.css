@@ -1,5 +1,6 @@
 :root {
-  --bg: rgba(20, 17, 16, 0.86);
+  --bg-alpha: 0.86;
+  --bg: rgba(20, 17, 16, var(--bg-alpha));
   --bg-solid: #141110;
   --panel: rgba(255, 255, 255, 0.05);
   --panel-2: rgba(255, 255, 255, 0.09);

@@ -20,6 +20,7 @@ const DEFAULTS = {
   timerScale: 1,
   hideOrb: false,
   orbScale: 1,
+  uiOpacity: 0.86,
   notify: true,
   eyeRest: true,
   waterEveryMin: 25,

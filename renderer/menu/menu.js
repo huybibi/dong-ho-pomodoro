@@ -160,6 +160,9 @@ const sig = { presets: '', ambient: '', today: '' };
 function paint(next) {
   st = next;
   const s = st.settings;
+  document.documentElement.style.setProperty('--bg-alpha', String(
+    Number.isFinite(Number(s.uiOpacity)) ? Math.min(1, Math.max(0.3, Number(s.uiOpacity))) : 0.86
+  ));
   document.body.classList.toggle('running', st.mode !== 'idle');
 
   U.q('#today-count').textContent = `${st.today.focus}/${st.goal} phiên hôm nay`;

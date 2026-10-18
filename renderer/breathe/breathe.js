@@ -20,6 +20,12 @@ let lastLeft = '';
 
 const LABEL = { prep: 'Chuẩn bị', in: 'Hít vào', out: 'Thở ra', hold: 'Nín thở', holdout: 'Nín thở' };
 
+function applyBg(st) {
+  const v = st && st.settings && Number.isFinite(Number(st.settings.uiOpacity))
+    ? Math.min(1, Math.max(0.3, Number(st.settings.uiOpacity))) : 0.86;
+  document.documentElement.style.setProperty('--bg-alpha', String(v));
+}
+
 function setPhase(kind, seconds) {
   document.body.className = document.body.className
     .split(' ')
@@ -42,6 +48,7 @@ function setPhase(kind, seconds) {
 }
 
 function paint(st) {
+  applyBg(st);
   const b = st.breath;
   if (!b) return;
 
