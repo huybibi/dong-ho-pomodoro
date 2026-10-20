@@ -24,11 +24,36 @@ Không cần cài đặt gì thêm, không cần tài khoản, không có máy c
 npm start
 ```
 
-Hoặc nháy đúp **`Chay-Ca-Chua.cmd`**, hoặc dùng shortcut **Đồng hồ Pomodoro** trên Desktop / menu Start (nếu đã tạo).
+Hoặc nháy đúp **`Chay-Ca-Chua.cmd`** (Windows), hoặc dùng shortcut **Đồng hồ Pomodoro** trên Desktop / menu Start (nếu đã tạo).
 
 Sau khi chạy, biểu tượng quả cà chua sẽ nổi ở góc dưới bên phải màn hình. Kéo nó đi chỗ khác được, vị trí được nhớ cho lần sau.
 
 > Lần đầu chạy cần `npm install` một lần để tải Electron.
+
+---
+
+## Cài trên macOS
+
+Tải file `.dmg` ở mục **Releases** — bản **universal**, chạy được trên cả Mac Apple Silicon lẫn Intel. Mở file, kéo **Pomodoro** vào thư mục **Applications**.
+
+Bản dựng chưa có chữ ký Apple Developer (chỉ ad-hoc signing), nên lần đầu macOS sẽ chặn. Vào **System Settings → Privacy & Security**, kéo xuống và bấm **Open Anyway**. Nếu vẫn báo *“app is damaged”*, chạy lệnh sau rồi mở lại:
+
+```sh
+xattr -dr com.apple.quarantine /Applications/Pomodoro.app
+```
+
+Sau khi mở, biểu tượng cà chua nằm ở **menu bar** (góc phải trên màn hình): bấm để mở menu hệ thống, hoặc bấm icon trên **Dock** để mở Cài đặt. Dữ liệu lưu tại `~/Library/Application Support/Đồng hồ Pomodoro/deepwork.json`.
+
+---
+
+## Đóng gói bộ cài
+
+| Nền tảng | Lệnh | Kết quả |
+| --- | --- | --- |
+| Windows | `npm run dist` | `dist/Pomodoro Setup 1.0.0.exe` |
+| macOS | `npm run dist:mac` (chạy trên máy Mac) | `dist/Pomodoro-1.0.0-universal.dmg` |
+
+Bản macOS cũng được đóng gói tự động bằng GitHub Actions (`.github/workflows/build-macos.yml`) trên runner macOS mỗi khi đẩy tag `v*`; file DMG được đính kèm vào Release. Máy Windows không tạo được DMG vì `hdiutil`/`codesign` chỉ có trên macOS.
 
 ---
 
@@ -66,7 +91,9 @@ Dùng được từ bất kỳ ứng dụng nào:
 | `Ctrl` `Alt` `M` | Mở menu |
 | `Ctrl` `Alt` `H` | Ẩn/hiện biểu tượng cà chua |
 
-Ngoài ra còn **khay hệ thống** (góc phải taskbar): trạng thái hiện tại, bắt đầu/dừng, chọn bài thở, chọn âm thanh nền, mở Thống kê & Cài đặt.
+Trên macOS, dùng `⌘` `⌥` thay cho `Ctrl` `Alt` (`⌘⌥P`, `⌘⌥B`, `⌘⌥X`, `⌘⌥M`, `⌘⌥H`). `⌘,` mở Cài đặt, `⌘Q` thoát.
+
+Ngoài ra còn **khay hệ thống** (taskbar trên Windows, menu bar trên macOS): trạng thái hiện tại, bắt đầu/dừng, chọn bài thở, chọn âm thanh nền, mở Thống kê & Cài đặt.
 
 ---
 
@@ -114,7 +141,7 @@ Nếu lỡ kéo cửa sổ ra ngoài màn hình, tab *Giao diện* có nút **đ
 
 ## Dữ liệu
 
-Lưu tại `%APPDATA%\Đồng hồ Pomodoro\deepwork.json` (một file JSON duy nhất, mở ra đọc được). Trong đó có lịch sử phiên, lý do bỏ phiên, mục tiêu từng phiên và vị trí các cửa sổ. Nút *Xoá toàn bộ lịch sử* nằm ở tab Thống kê.
+Lưu tại `%APPDATA%\Đồng hồ Pomodoro\deepwork.json` trên Windows và `~/Library/Application Support/Đồng hồ Pomodoro/deepwork.json` trên macOS (một file JSON duy nhất, mở ra đọc được). Trong đó có lịch sử phiên, lý do bỏ phiên, mục tiêu từng phiên và vị trí các cửa sổ. Nút *Xoá toàn bộ lịch sử* nằm ở tab Thống kê.
 
 ---
 
@@ -125,7 +152,7 @@ main.js              tiến trình chính: 6 cửa sổ, engine đếm giờ, tr
 preload.js           cầu nối an toàn (contextBridge) → window.tomato
 patterns.js          6 bài thở, mỗi bài là danh sách bước {loại, giây, nhãn}
 store.js             lưu/đọc deepwork.json + thống kê, chuỗi ngày, lý do bỏ phiên
-tools/make-icons.js  render chính SVG quả cà chua của cửa sổ orb thành PNG/ICO
+tools/make-icons.js  render chính SVG quả cà chua của cửa sổ orb thành PNG/ICO/ICNS
 tools/check-drag-size.py  kiểm tra hồi quy: kéo cửa sổ không được làm nó phình to
 renderer/
   orb/       biểu tượng cà chua nổi + vòng tiến độ (chỉ quả nhận chuột)
@@ -147,3 +174,4 @@ Sinh lại icon: `npm run icons`. Sinh lại ảnh demo: `set DEEPWORK_SHOTS=1&&
 - Biểu tượng, đồng hồ và màn hình thở đều là cửa sổ trong suốt, không viền, kéo thả tự do và tự neo vào cạnh màn hình.
 - **Kéo cửa sổ tuyệt đối không để cửa sổ tự suy ra kích thước.** Mỗi bước kéo đều gọi `setBounds` kèm cỡ đã chốt lúc bắt đầu kéo (`__size`, cỡ do chính app đặt chứ không phải cỡ `getBounds()` trả về), và toạ độ được ghim vào lưới pixel vật lý. Trên màn hình scale lệch (máy phát triển: 150%) mà làm khác đi — dùng `setPosition`, hoặc lấy `getBounds()` làm cỡ — thì cửa sổ phình thêm ~1px mỗi lần đặt vị trí, kéo một lúc là to đùng.
 - Kiểm tra lại điều này sau mỗi lần sửa phần kéo cửa sổ: `python tools/check-drag-size.py` (script gửi chuột thật rồi đo bằng `GetWindowRect`, không dùng API của Electron nên không thể tự lừa mình).
+- Bản macOS dùng `identity: "-"` (ad-hoc signing) và tắt `hardenedRuntime`, vì chưa có chứng chỉ Apple Developer. Khi có chứng chỉ, đổi `identity` thành tên chứng chỉ và bật lại `hardenedRuntime` để notarize.

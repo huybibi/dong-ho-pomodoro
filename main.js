@@ -9,7 +9,8 @@ const Store = require('./store');
 const RENDERER = path.join(__dirname, 'renderer');
 const ASSETS = path.join(__dirname, 'assets');
 const ICON = path.join(ASSETS, 'icon.png');
-const TRAY_ICON = path.join(ASSETS, 'tray.png');
+/* Menu bar macOS dùng icon 18pt; khay Windows/Linux dùng 32px. */
+const TRAY_ICON = path.join(ASSETS, process.platform === 'darwin' ? 'tray-mac.png' : 'tray.png');
 
 const SMOKE = !!process.env.DEEPWORK_SMOKE;
 const SHOTS = !!process.env.DEEPWORK_SHOTS;
@@ -539,11 +540,9 @@ function notify(title, body) {
 
 /* ------------------------------------------------------------------ tray */
 
-function buildTray() {
-  if (!tray) return;
-  engine.remaining; // noop giữ nhịp cập nhật
+function trayMenu() {
   const running = engine.running && (engine.mode === 'focus' || engine.mode === 'break' || engine.mode === 'long');
-  const menu = Menu.buildFromTemplate([
+  return Menu.buildFromTemplate([
     { label: running ? `${MODE_LABEL[engine.mode]} · ${fmtLeft(engine.remaining)}` : 'Đồng hồ Pomodoro', enabled: false },
     { label: `Hôm nay: ${store.todaySummary().focus}/${S.dailyGoal} phiên · chuỗi ${store.streak().current} ngày`, enabled: false },
     { type: 'separator' },
@@ -586,9 +585,16 @@ function buildTray() {
     { label: 'Thống kê & Cài đặt…', click: () => openSettings() },
     { label: 'Thoát', click: () => { quitting = true; app.quit(); } },
   ]);
-  tray.setContextMenu(menu);
+}
+
+function buildTray() {
+  if (!tray) return;
+  const running = engine.running && (engine.mode === 'focus' || engine.mode === 'break' || engine.mode === 'long');
   const tip = running ? `${MODE_LABEL[engine.mode]} · ${fmtLeft(engine.remaining)}` : 'Đồng hồ Pomodoro';
   tray.setToolTip(tip);
+  /* macOS: menu được dựng ngay lúc bấm (xem whenReady) để luôn đúng giờ và không thay
+     menu liên tục mỗi giây — thay menu đang mở có thể làm nó tự đóng. */
+  if (process.platform !== 'darwin') tray.setContextMenu(trayMenu());
 }
 
 function togglePause() {
@@ -633,6 +639,30 @@ function openSettings() {
     wins.settings.focus();
   }
   hide('menu');
+}
+
+/* macOS: menu ứng dụng tối giản (Cmd+, mở Cài đặt, Cmd+Q thoát, Sửa để dán mục tiêu). */
+function setAppMenu() {
+  Menu.setApplicationMenu(
+    Menu.buildFromTemplate([
+      {
+        label: app.name,
+        submenu: [
+          { role: 'about', label: `Giới thiệu ${app.name}` },
+          { type: 'separator' },
+          { label: 'Thống kê & Cài đặt…', accelerator: 'Command+,', click: () => openSettings() },
+          { type: 'separator' },
+          { role: 'hide', label: `Ẩn ${app.name}` },
+          { role: 'hideOthers', label: 'Ẩn các ứng dụng khác' },
+          { role: 'unhide', label: 'Hiện tất cả' },
+          { type: 'separator' },
+          { role: 'quit', label: `Thoát ${app.name}` },
+        ],
+      },
+      { role: 'editMenu', label: 'Sửa' },
+      { role: 'windowMenu', label: 'Cửa sổ' },
+    ])
+  );
 }
 
 /* ------------------------------------------------------------------ menu */
@@ -952,19 +982,28 @@ app.whenReady().then(() => {
 
   try {
     tray = new Tray(fs.existsSync(TRAY_ICON) ? TRAY_ICON : ICON);
-    tray.on('click', () => toggleMenu());
-    tray.on('double-click', () => openSettings());
+    tray.on('click', () => {
+      /* macOS: menu bar dùng menu hệ thống, còn Windows/Linux mở menu trong app. */
+      if (process.platform === 'darwin') tray.popUpContextMenu(trayMenu());
+      else toggleMenu();
+    });
+    tray.on('double-click', () => {
+      if (process.platform !== 'darwin') openSettings();
+    });
     buildTray();
   } catch (err) {
     console.log('tray failed', err && err.message);
   }
 
+  if (process.platform === 'darwin') setAppMenu();
+
+  const MOD = process.platform === 'darwin' ? 'Command+Option' : 'Control+Alt';
   const shorts = [
-    ['Control+Alt+P', () => (engine.mode === 'focus' ? togglePause() : startFocus(S.focusMin, engine.intent))],
-    ['Control+Alt+B', () => startBreathe(S.lastPattern || 'box')],
-    ['Control+Alt+X', () => stopSession('phím tắt')],
-    ['Control+Alt+M', () => toggleMenu()],
-    ['Control+Alt+H', () => {
+    [`${MOD}+P`, () => (engine.mode === 'focus' ? togglePause() : startFocus(S.focusMin, engine.intent))],
+    [`${MOD}+B`, () => startBreathe(S.lastPattern || 'box')],
+    [`${MOD}+X`, () => stopSession('phím tắt')],
+    [`${MOD}+M`, () => toggleMenu()],
+    [`${MOD}+H`, () => {
       store.patch({ hideOrb: !S.hideOrb });
       layout();
       broadcast();
@@ -1151,6 +1190,15 @@ app.whenReady().then(() => {
       app.quit();
     })();
   }
+});
+
+/* macOS: bấm icon trên Dock (hoặc mở lại app) thì hiện Cài đặt.
+   macOS cũng phát 'activate' lúc vừa khởi động, nên bỏ qua vài giây đầu để app
+   vẫn khởi động im lặng như một widget. */
+const bootedAt = Date.now();
+app.on('activate', () => {
+  if (Date.now() - bootedAt < 3000) return;
+  openSettings();
 });
 
 app.on('window-all-closed', (e) => {

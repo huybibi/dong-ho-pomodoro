@@ -12,7 +12,7 @@ const { app, BrowserWindow } = require('electron');
 
 const ROOT = path.join(__dirname, '..');
 const ASSETS = path.join(ROOT, 'assets');
-const BIG = 512; /* vẽ một lần ở 512 rồi thu nhỏ cho mọi kích thước */
+const BIG = 1024; /* vẽ một lần ở 1024 rồi thu nhỏ cho mọi kích thước (macOS cần 1024 cho Retina) */
 
 const SVG = (() => {
   const html = fs.readFileSync(path.join(ROOT, 'renderer', 'orb', 'index.html'), 'utf8');
@@ -25,6 +25,21 @@ const PAGE = `<!doctype html><html><head><meta charset="utf-8"><style>
   html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
   svg { display: block; width: 100%; height: 100%; }
 </style></head><body>${SVG}</body></html>`;
+
+/* ---------- .icns cho macOS (mỗi entry là một PNG) ---------- */
+
+function encodeICNS(entries) {
+  const chunks = entries.map(({ type, data }) => {
+    const head = Buffer.alloc(8);
+    head.write(type, 0, 4, 'ascii');
+    head.writeUInt32BE(data.length + 8, 4);
+    return Buffer.concat([head, data]);
+  });
+  const head = Buffer.alloc(8);
+  head.write('icns', 0, 4, 'ascii');
+  head.writeUInt32BE(8 + chunks.reduce((sum, chunk) => sum + chunk.length, 0), 4);
+  return Buffer.concat([head, ...chunks]);
+}
 
 /* ---------- .ico nhiều kích thước (mỗi entry là một PNG) ---------- */
 
@@ -81,9 +96,12 @@ app.whenReady().then(async () => {
   if (corner.a > 8) throw new Error('nền không trong suốt — icon sẽ có nền vuông');
 
   const jobs = [
-    ['icon.png', 256],
+    ['icon.png', 1024],
     ['tray.png', 32],
     ['tray@2x.png', 64],
+    /* Menu bar macOS: 18pt (36px @2x), nhỏ hơn khay Windows. */
+    ['tray-mac.png', 18],
+    ['tray-mac@2x.png', 36],
   ];
   for (const [name, px] of jobs) {
     fs.writeFileSync(path.join(ASSETS, name), cap.resize({ width: px, height: px, quality: 'best' }).toPNG());
@@ -96,6 +114,26 @@ app.whenReady().then(async () => {
     encodeICO(icoSizes.map((px) => ({ size: px, data: cap.resize({ width: px, height: px, quality: 'best' }).toPNG() })))
   );
   console.log('wrote icon.ico', icoSizes.join('/'));
+
+  const icnsSizes = [
+    ['icp4', 16],
+    ['icp5', 32],
+    ['icp6', 64],
+    ['ic07', 128],
+    ['ic08', 256],
+    ['ic09', 512],
+    ['ic10', 1024],
+  ];
+  fs.writeFileSync(
+    path.join(ASSETS, 'icon.icns'),
+    encodeICNS(
+      icnsSizes.map(([type, px]) => ({
+        type,
+        data: cap.resize({ width: px, height: px, quality: 'best' }).toPNG(),
+      }))
+    )
+  );
+  console.log('wrote icon.icns', icnsSizes.map(([, px]) => px).join('/'));
 
   win.destroy();
   app.quit();
