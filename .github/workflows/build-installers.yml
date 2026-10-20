@@ -1,0 +1,113 @@
+name: Build installers
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  macos:
+    name: macOS universal DMG
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build DMG (Apple Silicon + Intel)
+        run: npx electron-builder --mac --universal --publish never
+
+      - name: Verify DMG
+        run: |
+          ls -lh dist
+          hdiutil verify dist/*.dmg
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-dmg
+          path: dist/*.dmg
+          if-no-files-found: error
+
+  windows:
+    name: Windows NSIS installer
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build installer
+        run: npx electron-builder --win --x64 --publish never
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-exe
+          path: dist/*.exe
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [macos, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download installers
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: List files
+        run: ls -lh artifacts
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Pomodoro ${{ github.ref_name }}
+          body: |
+            ## Tải về
+
+            | Nền tảng | File |
+            | --- | --- |
+            | macOS (Apple Silicon + Intel) | `Pomodoro-*-universal.dmg` |
+            | Windows 10/11 (64-bit) | `Pomodoro Setup *.exe` |
+
+            ## Cài trên macOS
+
+            1. Mở file `.dmg`, kéo **Pomodoro** vào thư mục **Applications**.
+            2. Bản dựng chưa có chữ ký Apple Developer (ad-hoc signing), nên lần đầu macOS sẽ chặn.
+               Mở **System Settings → Privacy & Security**, kéo xuống và bấm **Open Anyway**.
+            3. Nếu vẫn báo “app is damaged”, chạy lệnh sau trong Terminal rồi mở lại:
+
+               ```sh
+               xattr -dr com.apple.quarantine /Applications/Pomodoro.app
+               ```
+
+            ## Cài trên Windows
+
+            Chạy file `.exe`, chọn thư mục cài đặt rồi bấm **Install**. Bản cài chưa ký số nên
+            SmartScreen có thể hỏi — bấm **More info → Run anyway**.
+          files: artifacts/*
+          fail_on_unmatched_files: true

@@ -50,10 +50,10 @@ Sau khi mở, biểu tượng cà chua nằm ở **menu bar** (góc phải trên
 
 | Nền tảng | Lệnh | Kết quả |
 | --- | --- | --- |
-| Windows | `npm run dist` | `dist/Pomodoro Setup 1.0.0.exe` |
-| macOS | `npm run dist:mac` (chạy trên máy Mac) | `dist/Pomodoro-1.0.0-universal.dmg` |
+| Windows | `npm run dist` | `dist/Pomodoro Setup 1.0.1.exe` |
+| macOS | `npm run dist:mac` (chạy trên máy Mac) | `dist/Pomodoro-1.0.1-universal.dmg` |
 
-Bản macOS cũng được đóng gói tự động bằng GitHub Actions (`.github/workflows/build-macos.yml`) trên runner macOS mỗi khi đẩy tag `v*`; file DMG được đính kèm vào Release. Máy Windows không tạo được DMG vì `hdiutil`/`codesign` chỉ có trên macOS.
+Cả hai bộ cài cũng được đóng gói tự động bằng GitHub Actions (`.github/workflows/build-installers.yml`) mỗi khi đẩy tag `v*`: DMG được build trên runner macOS, EXE trên runner Windows, rồi cả hai được đính kèm vào Release. Máy Windows không tạo được DMG vì `hdiutil`/`codesign` chỉ có trên macOS.
 
 ---
 
