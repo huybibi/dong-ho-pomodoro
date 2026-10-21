@@ -83,7 +83,8 @@ body.running #ring {
   stroke-dasharray: 327;
   stroke-dashoffset: 327;
   transition: stroke 0.4s;
-  filter: drop-shadow(0 0 6px currentColor);
+  /* Không dùng filter drop-shadow: hộp filter bị Chromium vẽ thành quầng
+     vuông mờ ôm quanh cung tiến trình. */
 }
 
 body.mode-break #ring .prog,
