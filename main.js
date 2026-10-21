@@ -238,7 +238,8 @@ function tick() {
 function endPrep() {
   engine.breath.prep = 0;
   const first = engine.steps[0];
-  sendTo(['breathe', 'audio', 'timer'], { type: 'phase', kind: first.k, label: first.l, dur: first.s });
+  sendTo(phaseTargets(), { type: 'phase', kind: first.k, label: first.l, dur: first.s });
+  voiceEvent('play');
 }
 
 function tickBreathe(dt) {
@@ -268,7 +269,7 @@ function tickBreathe(dt) {
     const cur = steps[b.index];
     b.stepLeft += cur.s;
     if (cur.k !== prev.k || cur.s !== prev.s) {
-      sendTo(['breathe', 'audio', 'timer'], { type: 'phase', kind: cur.k, label: cur.l, dur: cur.s });
+      sendTo(phaseTargets(), { type: 'phase', kind: cur.k, label: cur.l, dur: cur.s });
     }
   }
   broadcast();
@@ -280,6 +281,7 @@ function setMode(mode) {
 }
 
 function idle() {
+  voiceEvent('stop');
   engine.running = false;
   engine.total = 0;
   engine.remaining = 0;
@@ -293,6 +295,7 @@ function idle() {
 }
 
 function startFocus(minutes, intent) {
+  voiceEvent('stop');
   clearTips();
   engine.mode = 'focus';
   engine.running = true;
@@ -309,6 +312,7 @@ function startFocus(minutes, intent) {
 }
 
 function startBreak() {
+  voiceEvent('stop');
   const long = engine.completed > 0 && engine.completed % Math.max(1, S.longEvery) === 0;
   engine.mode = long ? 'long' : 'break';
   engine.running = true;
@@ -369,6 +373,15 @@ function skip() {
 
 const BREATH_PREP = 5; /* giây chuẩn bị trước khi bài thở bắt đầu */
 
+function phaseTargets() {
+  return engine.patternId === 'wimhof' ? ['breathe', 'timer'] : ['breathe', 'audio', 'timer'];
+}
+
+function voiceEvent(action, extra = {}) {
+  if (engine.patternId !== 'wimhof') return;
+  sendTo(['breathe'], { type: 'voice', action, ...extra });
+}
+
 function startBreathe(id) {
   const p = getPattern(id);
   if (!p) return;
@@ -382,15 +395,17 @@ function startBreathe(id) {
   engine.remaining = engine.total;
   engine.label = p.name;
   engine.intent = '';
-  engine.breath = { index: 0, stepLeft: built.steps[0].s, prep: BREATH_PREP };
+  const hasOwnIntro = p.id === 'wimhof';
+  engine.breath = { index: 0, stepLeft: built.steps[0].s, prep: hasOwnIntro ? 0 : BREATH_PREP };
   engine.startedAt = Date.now();
   store.patch({ lastPattern: p.id });
   sendTo(['breathe', 'audio', 'timer'], {
     type: 'pattern',
     pattern: { id: p.id, name: p.name, tag: p.tag, desc: p.desc, goal: p.goal, icon: p.icon, steps: built.steps },
   });
-  sendTo(['audio'], { type: 'cue', cue: 'start' });
+  if (p.id !== 'wimhof') sendTo(['audio'], { type: 'cue', cue: 'start' });
   setMode('breathe');
+  if (hasOwnIntro) endPrep();
   broadcast();
 }
 
@@ -414,15 +429,19 @@ function breatheSkipStep() {
   }
   engine.breath.stepLeft = 0;
   tickBreathe(0);
+  const next = engine.steps && engine.breath ? engine.steps[engine.breath.index] : null;
+  if (next) voiceEvent('seek', { t: next.at || 0 });
 }
 
 function breatheLoop() {
   if (engine.mode !== 'breathe' || !engine.steps || !engine.breath) return;
   engine.breath.index = 0;
   engine.breath.stepLeft = engine.steps[0].s;
-  engine.breath.prep = BREATH_PREP;
+  engine.breath.prep = engine.patternId === 'wimhof' ? 0 : BREATH_PREP;
   engine.remaining = engine.total;
   engine.running = true;
+  voiceEvent('restart');
+  if (engine.patternId === 'wimhof') endPrep();
   broadcast();
 }
 

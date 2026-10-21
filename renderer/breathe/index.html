@@ -2,7 +2,7 @@
 <html lang="vi">
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'none'; connect-src 'none'; object-src 'none'; base-uri 'none'" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'" />
     <link rel="stylesheet" href="../shared/base.css" />
     <link rel="stylesheet" href="breathe.css" />
   </head>
@@ -52,6 +52,7 @@
         </div>
       </div>
     </div>
+    <audio id="voice" preload="auto" src="../../assets/audio/wimhof.ogg"></audio>
     <script src="../shared/util.js"></script>
     <script src="breathe.js"></script>
   </body>

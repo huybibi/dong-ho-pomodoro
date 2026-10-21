@@ -1,7 +1,7 @@
 {
   "name": "dong-ho-pomodoro",
   "productName": "Đồng hồ Pomodoro",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Đồng hồ Pomodoro hỗ trợ phiên làm việc sâu (deep work): đếm ngược always-on-top, hít thở tập trung, thống kê chuỗi ngày.",
   "main": "main.js",
   "private": true,
